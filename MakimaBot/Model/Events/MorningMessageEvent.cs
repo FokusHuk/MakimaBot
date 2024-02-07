@@ -28,6 +28,5 @@ public class MorningMessageEvent : IChatEvent
             text: "Доброе утро ❤️");
 
         chat.EventsState.MorningMessage.LastTimeStampUtc = DateTime.UtcNow;
-        chat.WasUpdated = true;
     }
 }

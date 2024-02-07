@@ -3,6 +3,7 @@ using Amazon.S3;
 using MakimaBot.Model;
 using MakimaBot.Model.Config;
 using MakimaBot.Model.Events;
+using MakimaBot.Model.Infrastructure;
 using Telegram.Bot;
 
 using CancellationTokenSource cts = new();
@@ -31,16 +32,30 @@ var bucketClient = new BucketClient(
     applicationConfig.BucketConfig.BucketName,
     applicationConfig.BucketConfig.StateFileName);
 
+var dataContext = new DataContext(bucketClient);
+await dataContext.ConfigureAsync();
+
 var telegramBotClient = new TelegramBotClient(applicationConfig.TelegramBotToken);
 
-var chatEvents = new List<IChatEvent>()
+var chatEvents = new List<IChatEvent>
 {
     new MorningMessageEvent(),
     new ActivityStatisticsEvent()
 };
-var chatEventsHandler = new ChatEventsHandler(telegramBotClient, chatEvents);
-var chatMessagesHandler = new ChatMessagesHandler(telegramBotClient);
+var chatEventsHandler = new ChatEventsHandler(telegramBotClient, chatEvents, dataContext);
+var chatMessagesHandler = new ChatMessagesHandler(telegramBotClient, dataContext);
 
-var botController = new BotController(telegramBotClient, bucketClient, chatEventsHandler, chatMessagesHandler);
+var infrastructureJobs = new List<InfrastructureJob>
+{
+    new ErrorsCleanupJob(),
+    new UnknownChatMessagesCleanupJob()
+};
+var infrastructureJobsHandler = new InfrastructureJobsHandler(infrastructureJobs, dataContext);
+
+var botController = new BotController(
+    telegramBotClient,
+    chatEventsHandler,
+    chatMessagesHandler,
+    infrastructureJobsHandler);
 
 await botController.RunAsync(cts.Token);

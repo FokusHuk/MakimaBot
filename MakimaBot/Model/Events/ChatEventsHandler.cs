@@ -6,71 +6,69 @@ public class ChatEventsHandler
 {
     private readonly TelegramBotClient _telegramBotClient;
     private readonly ICollection<IChatEvent> _chatEvents;
+    private readonly DataContext _dataContext;
 
-    public ChatEventsHandler(TelegramBotClient telegramBotClient, ICollection<IChatEvent> chatEvents)
+    public ChatEventsHandler(
+        TelegramBotClient telegramBotClient,
+        ICollection<IChatEvent> chatEvents,
+        DataContext dataContext)
     {
         _telegramBotClient = telegramBotClient;
         _chatEvents = chatEvents;
+        _dataContext = dataContext;
     }
     
-    public async Task TryHandleEventsAsync(BotState state)
+    public async Task TryHandleEventsAsync()
     {
         try
         {
-            await HandleEventsAsync(state);
+            await HandleEventsAsync();
         }
         catch (Exception e)
         {
             var errorMessage = $"An error occured while handling chats events: {e.Message}";
             Console.WriteLine(errorMessage);
-            state.Errors.Add(new BotError
-            {
-                CreationDateTimeUtc = DateTime.UtcNow,
-                Message = errorMessage
-            });
-            state.WasUpdated = true;
+            _dataContext.AddError(DateTime.UtcNow, errorMessage);
         }
     }
     
-    private async Task HandleEventsAsync(BotState state)
+    private async Task HandleEventsAsync()
     {
-        foreach (var chat in state.Chats)
+        var chatStates = _dataContext.GetAllChatStates();
+        
+        foreach (var chatState in chatStates)
         {
-            await TryHandleChatEventsAsync(state, chat);
+            await TryHandleChatEventsAsync(chatState);
         }
     }
 
-    private async Task TryHandleChatEventsAsync(BotState state, ChatState chat)
+    private async Task TryHandleChatEventsAsync(ChatState chatState)
     {
         try
         {
-            await HandleChatEventsAsync(chat);
+            await HandleChatEventsAsync(chatState);
         }
         catch (Exception e)
         {
-            var errorMessage = $"An error occured while handling chat \"{chat.Name}\" event: {e.Message}";
+            var errorMessage = $"An error occured while handling chat \"{chatState.Name}\" event: {e.Message}";
             Console.WriteLine(errorMessage);
-            state.Errors.Add(new BotError
-            {
-                CreationDateTimeUtc = DateTime.UtcNow,
-                Message = errorMessage
-            });
-            state.WasUpdated = true;
+            _dataContext.AddError(DateTime.UtcNow, errorMessage);
         }
     }
     
-    private async Task HandleChatEventsAsync(ChatState chat)
+    private async Task HandleChatEventsAsync(ChatState chatState)
     {
-        var telegramChat = await _telegramBotClient.GetChatAsync(chat.ChatId);
+        var chat = await _telegramBotClient.GetChatAsync(chatState.ChatId);
         
-        if (telegramChat.Username != null && telegramChat.Username.Contains(chat.Name, StringComparison.OrdinalIgnoreCase)
-            || telegramChat.Title != null && telegramChat.Title.Contains(chat.Name, StringComparison.OrdinalIgnoreCase))
+        if (chat.Username != null && chat.Username.Contains(chatState.Name, StringComparison.OrdinalIgnoreCase)
+            || chat.Title != null && chat.Title.Contains(chatState.Name, StringComparison.OrdinalIgnoreCase))
         {
             foreach (var chatEvent in _chatEvents)
             {
-                if (chatEvent.ShouldLaunch(chat))
+                if (chatEvent.ShouldLaunch(chatState))
                 {
-                    await chatEvent.HandleEventAsync(_telegramBotClient, chat);
+                    await chatEvent.HandleEventAsync(_telegramBotClient, chatState);
+                    await _dataContext.SaveChangesAsync();
                 }
             }
         }

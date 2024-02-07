@@ -4,9 +4,6 @@ namespace MakimaBot.Model;
 
 public class ChatState
 {
-    [JsonIgnore]
-    public bool WasUpdated { get; set; } = false;
-    
     [JsonPropertyName("chatId")]
     public required long ChatId { get; set; }
 

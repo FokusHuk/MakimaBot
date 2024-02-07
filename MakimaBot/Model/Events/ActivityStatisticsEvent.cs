@@ -52,6 +52,5 @@ public class ActivityStatisticsEvent : IChatEvent
 
         chat.EventsState.ActivityStatistics.Statistics.Clear();
         chat.EventsState.ActivityStatistics.LastTimeStampUtc = DateTime.UtcNow;
-        chat.WasUpdated = true;
     }
 }
