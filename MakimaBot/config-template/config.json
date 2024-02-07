@@ -1,0 +1,11 @@
+﻿{
+  "telegramBotToken": "botToken",
+  "bucketConfig":
+  {
+    "accessKeyId": "accessKeyId",
+    "secretAccessKey": "secretAccessKey",
+    "bucketName": "bucket-name",
+    "serviceUrl": "https://storage.yandexcloud.net",
+    "stateFileName": "state.json"
+  }
+}
