@@ -53,8 +53,6 @@ public class MorningMessageEvent : IChatEvent
     private readonly string[] _morningMessages = {
         "Доброе утро ❤️",
         "Доброе утро, красивые 🕊",
-        "Утречко! 🐰",
-        "GOOD MORNING, VIETNAAAAAAM!",
         "Good morning, sunshines :3",
         "Утро... спать хочется",
         "Хорошего дня, я дальше спать 😴",

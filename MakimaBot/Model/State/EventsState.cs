@@ -9,4 +9,10 @@ public class EventsState
     
     [JsonPropertyName("activityStatisticsEventState")]
     public required ActivityStatisticsEventState ActivityStatistics { get; set; }
+
+    [JsonPropertyName("dailyReportNotificationEventState")]
+    public required DailyReportNotificationEventState DailyReportNotification { get; set; }
+
+    [JsonPropertyName("appVersionNotificationEventState")]
+    public required AppVersionNotificationEventState AppVersionNotification { get; set; }
 }

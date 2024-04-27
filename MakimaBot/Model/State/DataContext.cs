@@ -25,12 +25,12 @@ public class DataContext
 
     public IEnumerable<BotError> GetAllErrors()
     {
-        return _state.Errors;
+        return _state.Infrastructure.Errors;
     }
 
     public void UpdateErrors(ICollection<BotError> errors)
     {
-        _state.Errors = errors;
+        _state.Infrastructure.Errors = errors;
     }
     
     public void AddError(DateTime creationDateTimeUtc, string errorMessage)
@@ -38,13 +38,13 @@ public class DataContext
         if (string.IsNullOrEmpty(errorMessage))
             throw new ArgumentException(errorMessage);
 
-        if (_state.Errors.Count > 50)
+        if (_state.Infrastructure.Errors.Count > 50)
         {
             Console.WriteLine("Too many errors in state.");
             return;
         }
         
-        _state.Errors.Add(new BotError
+        _state.Infrastructure.Errors.Add(new BotError
         {
             CreationDateTimeUtc = creationDateTimeUtc,
             Message = errorMessage
@@ -63,17 +63,17 @@ public class DataContext
 
     public IEnumerable<UnknownChatMessage> GetAllUnknownChatMessages()
     {
-        return _state.UnknownChatsMessages;
+        return _state.Infrastructure.UnknownChatsMessages;
     }
 
     public void UpdateUnknownChatMessages(ICollection<UnknownChatMessage> unknownChatMessages)
     {
-        _state.UnknownChatsMessages = unknownChatMessages;
+        _state.Infrastructure.UnknownChatsMessages = unknownChatMessages;
     }
 
     public void AddUnknownMessage(DateTime sentDateTimeUtc, long chatId, string? message, string? username)
     {
-        if (_state.UnknownChatsMessages.Count > 50)
+        if (_state.Infrastructure.UnknownChatsMessages.Count > 50)
         {
             Console.WriteLine("Too many unknown messages in state.");
             return;
@@ -82,7 +82,7 @@ public class DataContext
         message ??= "Unknown message";
         username ??= "Unknown user";
         
-        _state.UnknownChatsMessages.Add(new UnknownChatMessage
+        _state.Infrastructure.UnknownChatsMessages.Add(new UnknownChatMessage
         {
             SentDateTimeUtc = sentDateTimeUtc,
             ChatId = chatId,

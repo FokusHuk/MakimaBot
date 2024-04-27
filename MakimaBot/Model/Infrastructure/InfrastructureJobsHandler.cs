@@ -19,7 +19,7 @@ public class InfrastructureJobsHandler
         {
             foreach (var job in _jobs)
             {
-                TryExecuteJob(job);
+                await TryExecuteJobAsync(job);
             }
         }
         catch (Exception e)
@@ -30,11 +30,11 @@ public class InfrastructureJobsHandler
         }
     }
 
-    private void TryExecuteJob(InfrastructureJob job)
+    private async Task TryExecuteJobAsync(InfrastructureJob job)
     {
         try
         {
-            job.ExecuteAsync(_dataContext);
+            await job.ExecuteAsync(_dataContext);
         }
         catch (Exception e)
         {

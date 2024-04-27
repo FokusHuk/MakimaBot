@@ -32,6 +32,9 @@ var bucketClient = new BucketClient(
     applicationConfig.BucketConfig.BucketName,
     applicationConfig.BucketConfig.StateFileName);
 
+var changelogFile = File.ReadAllText("changelog/changelog.json");
+var changelogs = JsonSerializer.Deserialize<Changelog[]>(changelogFile);
+
 var dataContext = new DataContext(bucketClient);
 await dataContext.ConfigureAsync();
 
@@ -40,7 +43,9 @@ var telegramBotClient = new TelegramBotClient(applicationConfig.TelegramBotToken
 var chatEvents = new List<IChatEvent>
 {
     new MorningMessageEvent(),
-    new ActivityStatisticsEvent()
+    new ActivityStatisticsEvent(),
+    new AdministrationDailyReportNotificationEvent(telegramBotClient, dataContext),
+    new AppVersionNotificationEvent(changelogs)
 };
 var chatEventsHandler = new ChatEventsHandler(telegramBotClient, chatEvents, dataContext);
 var chatMessagesHandler = new ChatMessagesHandler(telegramBotClient, dataContext);
