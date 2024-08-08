@@ -2,11 +2,11 @@
 
 public class InfrastructureJobsHandler
 {
-    private readonly ICollection<InfrastructureJob> _jobs;
+    private readonly IEnumerable<InfrastructureJob> _jobs;
     private readonly DataContext _dataContext;
 
     public InfrastructureJobsHandler(
-        ICollection<InfrastructureJob> jobs,
+        IEnumerable<InfrastructureJob> jobs,
         DataContext dataContext)
     {
         _jobs = jobs;

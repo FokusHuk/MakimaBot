@@ -10,6 +10,7 @@
     <ItemGroup>
       <PackageReference Include="AWSSDK.S3" Version="3.7.304.10" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
       <PackageReference Include="Telegram.Bot" Version="19.0.0" />
     </ItemGroup>
 

@@ -5,12 +5,12 @@ namespace MakimaBot.Model.Events;
 public class ChatEventsHandler
 {
     private readonly TelegramBotClient _telegramBotClient;
-    private readonly ICollection<IChatEvent> _chatEvents;
+    private readonly IEnumerable<IChatEvent> _chatEvents;
     private readonly DataContext _dataContext;
 
     public ChatEventsHandler(
         TelegramBotClient telegramBotClient,
-        ICollection<IChatEvent> chatEvents,
+        IEnumerable<IChatEvent> chatEvents,
         DataContext dataContext)
     {
         _telegramBotClient = telegramBotClient;

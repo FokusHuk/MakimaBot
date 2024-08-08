@@ -5,62 +5,62 @@ using MakimaBot.Model.Config;
 using MakimaBot.Model.Events;
 using MakimaBot.Model.Infrastructure;
 using Telegram.Bot;
-
-using CancellationTokenSource cts = new();
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var configFile = File.ReadAllText("config/config.json");
-var applicationConfig = JsonSerializer.Deserialize<ApplicationConfig>(configFile);
-
-if (applicationConfig == null)
-{
-    throw new InvalidOperationException("Unable to load application config");
-}
-
-var s3Config = new AmazonS3Config
-{
-    ServiceURL = applicationConfig.BucketConfig.ServiceUrl,
-    ForcePathStyle = true
-};
-        
-var s3Client = new AmazonS3Client(
-    applicationConfig.BucketConfig.AccessKeyId,
-    applicationConfig.BucketConfig.SecretAccessKey,
-    s3Config);
-
-var bucketClient = new BucketClient(
-    s3Client,
-    applicationConfig.BucketConfig.BucketName,
-    applicationConfig.BucketConfig.StateFileName);
+var applicationConfig = JsonSerializer.Deserialize<ApplicationConfig>(configFile)
+    ?? throw new InvalidOperationException("Unable to load application config");
 
 var changelogFile = File.ReadAllText("changelog/changelog.json");
-var changelogs = JsonSerializer.Deserialize<Changelog[]>(changelogFile);
+var changelogs = JsonSerializer.Deserialize<Changelog[]>(changelogFile)
+    ?? throw new InvalidOperationException("Unable to load changelog file");
 
-var dataContext = new DataContext(bucketClient);
-await dataContext.ConfigureAsync();
 
-var telegramBotClient = new TelegramBotClient(applicationConfig.TelegramBotToken);
+var builder = Host.CreateApplicationBuilder(args);
 
-var chatEvents = new List<IChatEvent>
+
+builder.Services.AddSingleton<BucketClient>(provider =>
 {
-    new MorningMessageEvent(),
-    new ActivityStatisticsEvent(),
-    new AdministrationDailyReportNotificationEvent(telegramBotClient, dataContext),
-    new AppVersionNotificationEvent(changelogs)
-};
-var chatEventsHandler = new ChatEventsHandler(telegramBotClient, chatEvents, dataContext);
-var chatMessagesHandler = new ChatMessagesHandler(telegramBotClient, dataContext);
+    var s3Config = new AmazonS3Config
+    {
+        ServiceURL = applicationConfig.BucketConfig.ServiceUrl,
+        ForcePathStyle = true
+    };
+        
+    var s3Client = new AmazonS3Client(
+        applicationConfig.BucketConfig.AccessKeyId,
+        applicationConfig.BucketConfig.SecretAccessKey,
+        s3Config);
 
-var infrastructureJobs = new List<InfrastructureJob>
-{
-    new ErrorsCleanupJob(),
-    new UnknownChatMessagesCleanupJob()
-};
-var infrastructureJobsHandler = new InfrastructureJobsHandler(infrastructureJobs, dataContext);
+    return new BucketClient(
+        s3Client,
+        applicationConfig.BucketConfig.BucketName,
+        applicationConfig.BucketConfig.StateFileName);
+});
 
-var botController = new BotController(
-    telegramBotClient,
-    chatEventsHandler,
-    chatMessagesHandler,
-    infrastructureJobsHandler);
+builder.Services.AddSingleton<DataContext>();
 
-await botController.RunAsync(cts.Token);
+builder.Services.AddSingleton<TelegramBotClient>(provider => 
+    new TelegramBotClient(applicationConfig.TelegramBotToken));
+
+
+builder.Services.AddSingleton<IChatEvent, MorningMessageEvent>();
+builder.Services.AddSingleton<IChatEvent, ActivityStatisticsEvent>();
+builder.Services.AddSingleton<IChatEvent, AdministrationDailyReportNotificationEvent>();
+builder.Services.AddSingleton<IChatEvent, AppVersionNotificationEvent>(provider =>
+    new AppVersionNotificationEvent(changelogs));
+
+builder.Services.AddSingleton<ChatEventsHandler>();
+builder.Services.AddSingleton<ChatMessagesHandler>();
+
+
+builder.Services.AddSingleton<InfrastructureJob, ErrorsCleanupJob>();
+builder.Services.AddSingleton<InfrastructureJob, UnknownChatMessagesCleanupJob>();
+
+builder.Services.AddSingleton<InfrastructureJobsHandler>();
+
+
+builder.Services.AddHostedService<BotController>();
+using var host = builder.Build();
+await host.RunAsync();
