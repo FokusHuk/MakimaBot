@@ -55,8 +55,9 @@ builder.Services.AddSingleton<ChatEventsHandler>();
 builder.Services.AddSingleton<ChatMessagesHandler>();
 
 
-builder.Services.AddSingleton<InfrastructureJob, ErrorsCleanupJob>();
-builder.Services.AddSingleton<InfrastructureJob, UnknownChatMessagesCleanupJob>();
+// temporarily disable - cleaned up in daily report event now
+//builder.Services.AddSingleton<InfrastructureJob, ErrorsCleanupJob>();
+//builder.Services.AddSingleton<InfrastructureJob, UnknownChatMessagesCleanupJob>();
 
 builder.Services.AddSingleton<InfrastructureJobsHandler>();
 

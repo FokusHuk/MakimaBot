@@ -26,7 +26,8 @@ public class ChatMessagesHandler
         {
             var errorMessage = $"An error occured while handling updates: {e.Message}";
             Console.WriteLine(errorMessage);
-            _dataContext.AddError(DateTime.UtcNow, errorMessage);
+            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await _dataContext.SaveChangesAsync();
         }
     }
 
@@ -61,7 +62,8 @@ public class ChatMessagesHandler
         {
             var errorMessage = $"An error occured while handling message: {e.Message}";
             Console.WriteLine(errorMessage);
-            _dataContext.AddError(DateTime.UtcNow, errorMessage);
+            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await _dataContext.SaveChangesAsync();
         }
     }
     

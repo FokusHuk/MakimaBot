@@ -38,28 +38,63 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
         if (chat?.Name != "akima_yooukie")
             return;
         
-        var message = GetReportMessage();
+        var errorsReport = GetErrorsReport();
+        var unknownMessagesReport = GetUnknownMessagesReport();
+        
 
-        if (!string.IsNullOrWhiteSpace(message))
+        if (!string.IsNullOrWhiteSpace(errorsReport))
         {
             await _telegramBotClient.SendTextMessageAsync(
                 chat.ChatId,
-                message,
+                TrimTelegramMessage(errorsReport),
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
+
+            _dataContext.UpdateErrors(Array.Empty<BotError>());
+        }
+
+        if (!string.IsNullOrWhiteSpace(unknownMessagesReport))
+        {
+            await _telegramBotClient.SendTextMessageAsync(
+                chat.ChatId,
+                TrimTelegramMessage(unknownMessagesReport),
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
 
             _dataContext.UpdateUnknownChatMessages(Array.Empty<UnknownChatMessage>());
-            _dataContext.UpdateErrors(Array.Empty<BotError>());
         }
 
         chat.EventsState.DailyReportNotification.LastTimeStampUtc = DateTime.UtcNow;
     }
 
-    private string GetReportMessage()
+    private string GetErrorsReport()
     {
-        var unknownChatMessages = _dataContext.GetAllUnknownChatMessages();
         var errors = _dataContext.GetAllErrors();
 
-        if (!unknownChatMessages.Any() && !errors.Any())
+        if (!errors.Any())
+            return string.Empty;
+
+        var errorsReport = string.Join(
+            "\n",
+            errors.Select(e => $"""
+                last seen (utc): {e.LastSeenDateTimeUtc}
+                message: {e.Message}
+                count: {e.Count}
+                -----
+                """));
+
+        var message = $"""
+        *Daily Makima bot report*
+        _> Errors_
+        {(string.IsNullOrWhiteSpace(errorsReport) ? "no errors" : errorsReport)}
+        """;
+
+        return message;
+    }
+
+    private string GetUnknownMessagesReport()
+    {
+        var unknownChatMessages = _dataContext.GetAllUnknownChatMessages();
+
+        if (!unknownChatMessages.Any())
             return string.Empty;
 
         var unknownMessagesReport = string.Join(
@@ -72,22 +107,21 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
                 -----
                 """));
 
-        var errorsReport = string.Join(
-            "\n",
-            errors.Select(e => $"""
-                date time (utc): {e.CreationDateTimeUtc}
-                message: {e.Message}
-                -----
-                """));
-
         var message = $"""
         *Daily Makima bot report*
         _> Unknown messages_
         {(string.IsNullOrWhiteSpace(unknownMessagesReport) ? "no messages" : unknownMessagesReport)}
-
-        _> Errors_
-        {(string.IsNullOrWhiteSpace(errorsReport) ? "no errors" : errorsReport)}
         """;
+
+        return message;
+    }
+
+    private string TrimTelegramMessage(string message)
+    {
+        const int MaxTelegramMessageLength = 4096;
+
+        if (message.Length > MaxTelegramMessageLength)
+            message = message[..MaxTelegramMessageLength];
 
         return message;
     }

@@ -28,7 +28,8 @@ public class ChatEventsHandler
         {
             var errorMessage = $"An error occured while handling chats events: {e.Message}";
             Console.WriteLine(errorMessage);
-            _dataContext.AddError(DateTime.UtcNow, errorMessage);
+            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await _dataContext.SaveChangesAsync();
         }
     }
     
@@ -52,7 +53,8 @@ public class ChatEventsHandler
         {
             var errorMessage = $"An error occured while handling chat \"{chatState.Name}\" event: {e.Message}";
             Console.WriteLine(errorMessage);
-            _dataContext.AddError(DateTime.UtcNow, errorMessage);
+            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await _dataContext.SaveChangesAsync();
         }
     }
     

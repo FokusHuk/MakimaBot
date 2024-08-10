@@ -3,10 +3,13 @@
 namespace MakimaBot.Model;
 
 public class BotError
-{
-    [JsonPropertyName("creationDateTimeUtc")]
-    public required DateTime CreationDateTimeUtc { get; set; }
-    
+{   
     [JsonPropertyName("message")]
     public required string Message { get; set; }
+
+    [JsonPropertyName("lastSeenDateTimeUtc")]
+    public required DateTime LastSeenDateTimeUtc { get; set; }
+
+    [JsonPropertyName("count")]
+    public required int Count { get; set; }
 }

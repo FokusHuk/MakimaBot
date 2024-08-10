@@ -26,7 +26,8 @@ public class InfrastructureJobsHandler
         {
             var errorMessage = $"An error occured while handling infrastructure jobs: {e.Message}";
             Console.WriteLine(errorMessage);
-            _dataContext.AddError(DateTime.UtcNow, errorMessage);
+            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await _dataContext.SaveChangesAsync();
         }
     }
 
@@ -40,7 +41,8 @@ public class InfrastructureJobsHandler
         {
             var errorMessage = $"An error occured while executing {job.Name}: {e.Message}";
             Console.WriteLine();
-            _dataContext.AddError(DateTime.UtcNow, errorMessage);
+            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await _dataContext.SaveChangesAsync();
         }
     }
 }

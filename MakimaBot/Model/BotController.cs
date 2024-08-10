@@ -34,12 +34,14 @@ public class BotController : BackgroundService
 
         var botUser = await _telegramClient.GetMeAsync(cancellationToken);
         LogOnStartMessage(botUser);
-        
+
         await _chatMessagesHandler.TryHandleUpdatesAsync(cancellationToken);
         await _chatEventsHandler.TryHandleEventsAsync();
         await _infrastructureJobsHandler.TryHandleJobsAsync(cancellationToken);
         
         LogOnFinishMessage(botUser);
+
+        Environment.Exit(0);
     }
 
     private void LogOnStartMessage(User user)

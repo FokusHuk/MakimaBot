@@ -33,10 +33,19 @@ public class DataContext
         _state.Infrastructure.Errors = errors;
     }
     
-    public void AddError(DateTime creationDateTimeUtc, string errorMessage)
+    public void AddOrUpdateError(DateTime creationDateTimeUtc, string errorMessage)
     {
         if (string.IsNullOrEmpty(errorMessage))
             throw new ArgumentException(errorMessage);
+
+        var error = _state.Infrastructure.Errors.SingleOrDefault(error => error.Message == errorMessage);
+
+        if (error is not null)
+        {
+            error.LastSeenDateTimeUtc = creationDateTimeUtc;
+            error.Count++;
+            return;
+        }
 
         if (_state.Infrastructure.Errors.Count > 50)
         {
@@ -46,8 +55,9 @@ public class DataContext
         
         _state.Infrastructure.Errors.Add(new BotError
         {
-            CreationDateTimeUtc = creationDateTimeUtc,
-            Message = errorMessage
+            LastSeenDateTimeUtc = creationDateTimeUtc,
+            Message = errorMessage,
+            Count = 1
         });
     }
 

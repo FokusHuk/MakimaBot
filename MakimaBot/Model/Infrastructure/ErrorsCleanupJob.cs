@@ -14,7 +14,7 @@ public class ErrorsCleanupJob : InfrastructureJob
         
         foreach (var botError in errors)
         {
-            if (currentDateTimeUtc - botError.CreationDateTimeUtc > errorsCleanupThreshold)
+            if (currentDateTimeUtc - botError.LastSeenDateTimeUtc > errorsCleanupThreshold)
                 errorsToRemove.Add(botError);
         }
         
