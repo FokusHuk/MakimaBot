@@ -3,7 +3,7 @@
 public class DataContext
 {
     private readonly BucketClient _bucketClient;
-    private BotState _state;
+    private BotState? _state;
 
     public DataContext(BucketClient bucketClient)
     {
