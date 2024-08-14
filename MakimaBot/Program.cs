@@ -7,13 +7,10 @@ var builder = Host.CreateDefaultBuilder(args)
             webBuilder.UseStartup<Startup>();
             webBuilder.UseKestrel(options =>
             {
-                var port = Environment.GetEnvironmentVariable("PORT");
+                var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
                 ArgumentNullException.ThrowIfNull(port);
 
-                options.ListenAnyIP(int.Parse(port), listentOptions =>
-                {
-                    listentOptions.UseHttps();
-                });
+                options.ListenAnyIP(int.Parse(port));
             });
         })
         .Build();

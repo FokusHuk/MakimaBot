@@ -8,7 +8,6 @@ using Telegram.Bot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Hosting;
 
 public class Startup
 {
@@ -65,23 +64,11 @@ public class Startup
 
         services.AddSingleton<IBotService, BotService>();
 
-        // services.AddHttpsRedirection(options =>
-        // {
-        //     Environment.SetEnvironmentVariable("PORT", "8432");
-
-        //     var port = Environment.GetEnvironmentVariable("PORT");
-        //     ArgumentNullException.ThrowIfNull(port);
-
-        //     options.HttpsPort = int.Parse(port);
-        // });
-
         services.AddControllers();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        app.UseHttpsRedirection();
-
         app.UseRouting();
 
         app.UseEndpoints(endpoints =>

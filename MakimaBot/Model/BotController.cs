@@ -12,7 +12,6 @@ public class BotController : ControllerBase
         _botService = botService;
     }
 
-    [HttpGet]
     [HttpPost]
     [Route("")]
     public async Task<IActionResult> ProcessAsync(CancellationToken cancellationToken)
@@ -22,11 +21,12 @@ public class BotController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("health")]
     public IActionResult CheckHealth(CancellationToken cancellationToken)
     {
-        return new JsonResult(new {
+        return new JsonResult(new
+        {
             Status = "Healthy"
         });
     }
