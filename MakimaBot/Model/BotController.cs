@@ -1,56 +1,33 @@
-﻿using MakimaBot.Model.Events;
-using MakimaBot.Model.Infrastructure;
-using Microsoft.Extensions.Hosting;
-using Telegram.Bot;
-using Telegram.Bot.Types;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MakimaBot.Model;
 
-public class BotController : BackgroundService
+[ApiController]
+public class BotController : ControllerBase
 {
-    private readonly TelegramBotClient _telegramClient;
-    private readonly DataContext _dataContext;
-    private readonly ChatEventsHandler _chatEventsHandler;
-    private readonly ChatMessagesHandler _chatMessagesHandler;
-    private readonly InfrastructureJobsHandler _infrastructureJobsHandler;
+    private readonly IBotService _botService;
 
-    public BotController(
-        TelegramBotClient telegramClient,
-        DataContext dataContext,
-        ChatEventsHandler chatEventsHandler,
-        ChatMessagesHandler chatMessagesHandler,
-        InfrastructureJobsHandler infrastructureJobsHandler)
+    public BotController(IBotService botService)
     {
-        _telegramClient = telegramClient;
-        _dataContext = dataContext;
-        _chatEventsHandler = chatEventsHandler;
-        _chatMessagesHandler = chatMessagesHandler;
-        _infrastructureJobsHandler = infrastructureJobsHandler;
+        _botService = botService;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    [HttpGet]
+    [HttpPost]
+    [Route("")]
+    public async Task<IActionResult> ProcessAsync(CancellationToken cancellationToken)
     {
-        await _dataContext.ConfigureAsync();
-
-        var botUser = await _telegramClient.GetMeAsync(cancellationToken);
-        LogOnStartMessage(botUser);
-
-        await _chatMessagesHandler.TryHandleUpdatesAsync(cancellationToken);
-        await _chatEventsHandler.TryHandleEventsAsync();
-        await _infrastructureJobsHandler.TryHandleJobsAsync(cancellationToken);
+        await _botService.ProcessAsync(cancellationToken);
         
-        LogOnFinishMessage(botUser);
-
-        Environment.Exit(0);
+        return Ok();
     }
 
-    private void LogOnStartMessage(User user)
+    [HttpGet]
+    [Route("health")]
+    public IActionResult CheckHealth(CancellationToken cancellationToken)
     {
-        Console.WriteLine($"[{_telegramClient.GetHashCode()}] Start listening for @{user.Username}.");
-    }
-    
-    private void LogOnFinishMessage(User user)
-    {
-        Console.WriteLine($"[{_telegramClient.GetHashCode()}] Stop listening for @{user.Username}");
+        return new JsonResult(new {
+            Status = "Healthy"
+        });
     }
 }
