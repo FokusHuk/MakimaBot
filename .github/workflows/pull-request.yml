@@ -12,11 +12,13 @@ jobs:
       DOCKER_BUILDKIT: 1
 
     steps:
+    - uses: actions/checkout@v3
+
     - name: path
       run: pwd
 
     - name: view
-      run: sudo ls
+      run: ls -l
 
     - name: version
       run: cat ./appversion.json
