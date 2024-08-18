@@ -16,4 +16,7 @@ jobs:
       run: pwd
 
     - name: view
-      run: ls -l
+      run: ls
+
+    - name: version
+      run: cat ./appversion.json
