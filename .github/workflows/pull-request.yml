@@ -1,0 +1,16 @@
+name: pull request
+
+on: pull_request
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      DOCKER_BUILDKIT: 1
+
+    steps:
+    - name: view
+      run: ls -l
