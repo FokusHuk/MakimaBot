@@ -14,6 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install jq
+      run: sudo apt-get install jq
+
     - name: path
       run: pwd
 
@@ -21,4 +24,9 @@ jobs:
       run: ls -l
 
     - name: version
-      run: cat ./appversion.json
+      run: cat ./MakimaBot/appversion.json
+
+    - name: parse version
+      run: |
+        VERSION=$(jq -r '.version' ./MakimaBot/appversion.json)
+        echo $VERSION
