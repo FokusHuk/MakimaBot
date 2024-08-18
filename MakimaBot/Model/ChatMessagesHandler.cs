@@ -7,13 +7,14 @@ public class ChatMessagesHandler
 {
     private readonly TelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
-
+    private readonly ChatCommandHandler _commandHandler;
     private const int UpdateMessagesLimit = 25;
 
-    public ChatMessagesHandler(TelegramBotClient telegramBotClient, DataContext dataContext)
+    public ChatMessagesHandler(TelegramBotClient telegramBotClient, DataContext dataContext, ChatCommandHandler commandHandler)
     {
         _telegramBotClient = telegramBotClient;
         _dataContext = dataContext;
+        _commandHandler = commandHandler;
     }
 
     public async Task TryHandleUpdatesAsync(CancellationToken cancellationToken)
@@ -71,7 +72,7 @@ public class ChatMessagesHandler
     {
         if (update.Message is not { } message)
             return;
-    
+            
         var chatId = message.Chat.Id;
     
         if (message.Sticker is { SetName: { } } sticker &&
@@ -106,6 +107,12 @@ public class ChatMessagesHandler
 
     private async Task ProcessTrustedChatAsync(Message message, ChatState chatState, CancellationToken cancellationToken)
     {
+        if(!string.IsNullOrWhiteSpace(message.Text) && message.Text.Trim().StartsWith("@makima_daily_bot"))
+        {
+            await _commandHandler.HandleAsync(message, chatState, _telegramBotClient, cancellationToken);
+            return;
+        }
+
         if (chatState.EventsState.ActivityStatistics.IsEnabled)
         {
             var chatActivityStatistics = chatState.EventsState.ActivityStatistics.Statistics;

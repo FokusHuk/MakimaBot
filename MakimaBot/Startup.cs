@@ -64,6 +64,16 @@ public class Startup
 
         services.AddSingleton<IBotService, BotService>();
 
+        services.AddHttpClient();
+
+        services.AddSingleton<ChatCommandHandler>();
+        services.AddSingleton<ChatCommand, GptChatCommand>();
+        services.AddSingleton<IGptClient, GptClient>(provider =>
+        {
+            var httpClientFactory = provider.GetService<IHttpClientFactory>();
+            return new GptClient(httpClientFactory, applicationConfig.GptConfig);
+        });
+
         services.AddControllers();
     }
 

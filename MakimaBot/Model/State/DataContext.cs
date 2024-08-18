@@ -11,10 +11,7 @@ public class DataContext
     }
 
     public async Task ConfigureAsync()
-    {
-        if (_state is not null)
-            throw new InvalidOperationException("State is already configured.");
-            
+    {       
         _state = await _bucketClient.LoadStateAsync();
     }
 
