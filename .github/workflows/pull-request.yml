@@ -33,8 +33,8 @@ jobs:
 
     - name: tag docker image
       run: |
-        docker tag makima-bot ${{ env.registry }}/${{ env.makima_bot }}:$APP_VERSION
+        docker tag makima-bot ${{ env.registry }}/${{ env.image_name }}:$APP_VERSION
     
     - name: docker push
       run: |
-        docker push ${{ env.registry }}/${{ env.makima_bot }}:$APP_VERSION
+        docker push ${{ env.registry }}/${{ env.image_name }}:$APP_VERSION
