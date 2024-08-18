@@ -24,10 +24,11 @@ jobs:
       run: |
         APP_VERSION=$(jq -r '.version' ./MakimaBot/appversion.json)
         echo $APP_VERSION
-        echo $app_config
+        echo ${{ env.app_config }} > ./MakimaBot/config/test.json
+        echo ./MakimaBot/config/test.json
 
     - name: build docker image
-      run: |
+      run: |  
         docker build -t makima-bot ./MakimaBot/
 
     - name: tag docker image
