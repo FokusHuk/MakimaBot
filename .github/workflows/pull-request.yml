@@ -24,7 +24,7 @@ jobs:
       run: |
         APP_VERSION=$(jq -r '.version' ./MakimaBot/appversion.json)
         echo $APP_VERSION
-        echo ${{ env.app_config }} > test.json
+        echo "${{ env.app_config }}" > test.json
         cat test.json
 
     - name: build docker image
