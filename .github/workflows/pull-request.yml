@@ -12,6 +12,7 @@ jobs:
       DOCKER_BUILDKIT: 1
       image_name: makima_bot
       registry: cr.yandex/crpn1hg55doc8emgahe0
+      app_config: ${{ secrets.APP_CONFIG }}
 
     steps:
     - uses: actions/checkout@v3
@@ -23,6 +24,7 @@ jobs:
       run: |
         APP_VERSION=$(jq -r '.version' ./MakimaBot/appversion.json)
         echo $APP_VERSION
+        echo $app_config
 
     - name: build docker image
       run: |
