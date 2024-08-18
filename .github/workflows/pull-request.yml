@@ -1,0 +1,25 @@
+name: pull request
+
+on: pull_request
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      DOCKER_BUILDKIT: 1
+      image_name: makima_bot
+      registry: cr.yandex/crpn1hg55doc8emgahe0
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: install jq
+      run: sudo apt-get install jq
+
+    - name: get app version
+      id: app-version
+      run: |
+        echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/appversion.json)"
