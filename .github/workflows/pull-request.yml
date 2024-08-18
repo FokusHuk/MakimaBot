@@ -12,5 +12,8 @@ jobs:
       DOCKER_BUILDKIT: 1
 
     steps:
+    - name: path
+      run: pwd
+
     - name: view
       run: ls -l
