@@ -23,18 +23,3 @@ jobs:
       id: app-version
       run: |
         echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/appversion.json)"
-
-    - name: build docker image
-      run: |  
-        docker build -t makima-bot ./MakimaBot/
-
-    - name: cr.yandex auth
-      run: echo '${{ secrets.REGISTRY_KEY }}' | docker login -u json_key --password-stdin cr.yandex
-
-    - name: tag docker image
-      run: |
-        docker tag makima-bot ${{ env.registry }}/${{ env.image_name }}:${{ steps.app-version.outputs.APP_VERSION }}
-    
-    - name: docker push
-      run: |
-        docker push ${{ env.registry }}/${{ env.image_name }}:${{ steps.app-version.outputs.APP_VERSION }}
