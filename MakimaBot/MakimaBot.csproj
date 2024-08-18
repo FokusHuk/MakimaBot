@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="config\config.json">
+        <Content Condition="Exists('config\config.json')" Include="config\config.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

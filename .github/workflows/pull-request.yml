@@ -12,7 +12,6 @@ jobs:
       DOCKER_BUILDKIT: 1
       image_name: makima_bot
       registry: cr.yandex/crpn1hg55doc8emgahe0
-      app_config: ${{ secrets.APP_CONFIG }}
 
     steps:
     - uses: actions/checkout@v3
@@ -24,12 +23,13 @@ jobs:
       run: |
         APP_VERSION=$(jq -r '.version' ./MakimaBot/appversion.json)
         echo $APP_VERSION
-        echo "${{ env.app_config }}" > test.json
-        cat test.json
 
     - name: build docker image
       run: |  
         docker build -t makima-bot ./MakimaBot/
+
+    - name: cr.yandex auth
+      run: echo '${{ secrets.REGISTRY_KEY }}' | docker login -u json_key --password-stdin cr.yandex
 
     - name: tag docker image
       run: |
