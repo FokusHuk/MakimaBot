@@ -6,7 +6,7 @@ public class EventsState
 {
     [JsonPropertyName("morningMessageEventState")]
     public required MorningMessageEventState MorningMessage { get; set; }
-    
+
     [JsonPropertyName("activityStatisticsEventState")]
     public required ActivityStatisticsEventState ActivityStatistics { get; set; }
 
@@ -15,4 +15,7 @@ public class EventsState
 
     [JsonPropertyName("appVersionNotificationEventState")]
     public required AppVersionNotificationEventState AppVersionNotification { get; set; }
+
+    [JsonPropertyName("eveningMessageEventState")]
+    public EveningMessageEventState EveningMessage { get; set; } //todo: либо вручную прокинуть во все чаты и сделать required, либо что-то придумать и облегчить участь новым чатам
 }
