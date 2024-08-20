@@ -74,19 +74,9 @@ public class ChatMessagesHandler
             return;
             
         var chatId = message.Chat.Id;
-    
-        if (message.Sticker is { SetName: { } } sticker &&
-            sticker.SetName.Equals("makimapak", StringComparison.InvariantCultureIgnoreCase))
+
+        if(await CheckHealthAsync(message, chatId, cancellationToken))
         {
-            if (sticker.Emoji == "😤")
-            {
-                await _telegramBotClient.SendTextMessageAsync(
-                    chatId: chatId,
-                    text: "❤️",
-                    replyToMessageId: message.MessageId,
-                    cancellationToken: cancellationToken);
-            }
-    
             return;
         }
     
@@ -104,12 +94,30 @@ public class ChatMessagesHandler
             }
         }
     }
+    
+    private async Task<bool> CheckHealthAsync(Message message, long chatId, CancellationToken cancellationToken)
+    {
+        if (message.Sticker is { SetName: { } } sticker &&
+            sticker.SetName.Equals("makimapak", StringComparison.InvariantCultureIgnoreCase))
+        {
+            if (sticker.Emoji == "😤")
+            {
+                await _telegramBotClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "❤️",
+                    replyToMessageId: message.MessageId,
+                    cancellationToken: cancellationToken);
+            }
+
+            return true;
+        }
+        return false;
+    }
 
     private async Task ProcessTrustedChatAsync(Message message, ChatState chatState, CancellationToken cancellationToken)
     {
-        if(!string.IsNullOrWhiteSpace(message.Text) && message.Text.Trim().StartsWith("@makima_daily_bot"))
+        if(await HandleGptMessageAsync(message, chatState, cancellationToken))
         {
-            await _commandHandler.HandleAsync(message, chatState, _telegramBotClient, cancellationToken);
             return;
         }
 
@@ -124,10 +132,25 @@ public class ChatMessagesHandler
             await _dataContext.SaveChangesAsync();
         }
 
+        await SayRandomPhraseAsync(chatState.ChatId, cancellationToken);
+    }
+
+    private async Task<bool> HandleGptMessageAsync(Message message, ChatState chatState, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(message.Text) && message.Text.Trim().StartsWith("@makima_daily_bot"))
+        {
+            await _commandHandler.HandleAsync(message, chatState, _telegramBotClient, cancellationToken);
+            return true;
+        }
+        return false;
+    }
+
+    private async Task SayRandomPhraseAsync(long chatId, CancellationToken cancellationToken) //todo: ответ моно сделать еще более живымб если использовать gpt
+    {
         var random = new Random();
         if (random.Next(10) < 1)
         {
-            var reactions = new []
+            var reactions = new[]
             {
                 "Я все вижу 👀",
                 "Хватит сюда писать",
@@ -137,9 +160,9 @@ public class ChatMessagesHandler
                 "Ахахаххахахаха",
                 "До вечера 🌙"
             };
-                
+
             await _telegramBotClient.SendTextMessageAsync(
-                chatState.ChatId,
+                chatId,
                 reactions[random.Next(reactions.Length)],
                 cancellationToken: cancellationToken);
         }
