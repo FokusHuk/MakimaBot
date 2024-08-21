@@ -17,5 +17,5 @@ public class EventsState
     public required AppVersionNotificationEventState AppVersionNotification { get; set; }
 
     [JsonPropertyName("eveningMessageEventState")]
-    public EveningMessageEventState EveningMessage { get; set; } //todo: либо вручную прокинуть во все чаты и сделать required, либо что-то придумать и облегчить участь новым чатам
+    public required EveningMessageEventState EveningMessage { get; set; }
 }
