@@ -7,10 +7,7 @@ public class EveningMessageEvent : ScheduledEventBase, IChatEvent
     protected override TimeSpan EventTimeStartUtc { get => new TimeSpan(hours: 20, minutes: 30, seconds: 0); }
     protected override TimeSpan EventTimeEndUtc { get => new TimeSpan(hours: 22, minutes: 0, seconds: 0); }
     
-    public bool ShouldLaunch(ChatState chat)
-    {
-        return ShouldLaunch(chat.EventsState.EveningMessage);
-    }
+    public bool ShouldLaunch(ChatState chat) => ShouldLaunch(chat.EventsState.EveningMessage);
 
     public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
     {
