@@ -5,7 +5,7 @@ public abstract class ScheduledEventBase
     protected abstract TimeSpan EventTimeStartUtc { get; }
     protected abstract TimeSpan EventTimeEndUtc { get; }
 
-    protected bool ShouldLaunch(IScheduledMessageEventState state)
+    protected bool ShouldLaunch(ScheduledMessageEventState state)
     {
         var currentDateTimeUtc = DateTime.UtcNow;
 
