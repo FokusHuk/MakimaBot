@@ -17,5 +17,5 @@ public class EventsState
     public required AppVersionNotificationEventState AppVersionNotification { get; set; }
 
     [JsonPropertyName("eveningMessageEventState")]
-    public EveningMessageEventState EveningMessage { get; set; }
+    public required EveningMessageEventState EveningMessage { get; set; }
 }
