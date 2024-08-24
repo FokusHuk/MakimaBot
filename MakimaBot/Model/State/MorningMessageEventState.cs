@@ -2,7 +2,7 @@
 
 namespace MakimaBot.Model;
 
-public class MorningMessageEventState
+public class MorningMessageEventState : IScheduledMessageEventState
 {
     [JsonPropertyName("isEnabled")]
     public required bool IsEnabled { get; set; }

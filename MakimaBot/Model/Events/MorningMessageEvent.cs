@@ -1,20 +1,36 @@
-﻿using System.Globalization;
+﻿using Telegram.Bot;
 
 namespace MakimaBot.Model.Events;
 
-public class MorningMessageEvent : DailyMessageEvent
+public class MorningMessageEvent : ScheduledEventBase, IChatEvent
 {
-    protected override TimeSpan EventTimeStartUtc { get => _morningTimeStartUtc; }
-    protected override TimeSpan EventTimeEndUtc { get => _morningTimeEndUtc; }
-    protected override string[] EventMessages { get => _morningMessages; }
+    protected override TimeSpan EventTimeStartUtc { get => new TimeSpan(hours: 5, minutes: 0, seconds: 0); }
+    protected override TimeSpan EventTimeEndUtc { get => new TimeSpan(hours: 7, minutes: 25, seconds: 0); }
+    
+    public bool ShouldLaunch(ChatState chat)
+    {
+        return ShouldLaunch(chat.EventsState.MorningMessage);
+    }
 
-    private readonly TimeSpan _morningTimeStartUtc =
-        DateTime.Parse("2023-01-01 05:00:00", CultureInfo.InvariantCulture).TimeOfDay;
-    
-    private readonly TimeSpan _morningTimeEndUtc =
-        DateTime.Parse("2023-01-01 07:25:00", CultureInfo.InvariantCulture).TimeOfDay;
-    
-    private readonly string[] _morningMessages = {
+    public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
+    {
+        await telegramBotClient.SendTextMessageAsync(
+           chatId: chat.ChatId,
+           text: GetRandomMessage());
+
+        chat.EventsState.MorningMessage.LastTimeStampUtc = DateTime.UtcNow;
+        chat.EventsState.MorningMessage.NextStartTimeStampUtc = GetNextStartTimeStampUtc();
+    }
+
+    private string GetRandomMessage()
+    {
+        var random = new Random();
+
+        return _morningMessages[random.Next(0, _morningMessages.Length)];
+    }
+
+    private readonly string[] _morningMessages =
+    {
         "Доброе утро ❤️",
         "Доброе утро, красивые 🕊",
         "Good morning, sunshines :3",
