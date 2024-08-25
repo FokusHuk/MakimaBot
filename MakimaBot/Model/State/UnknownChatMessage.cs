@@ -1,18 +1,27 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable disable
+
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class UnknownChatMessage
+public class UnknownChatMessage : ValidatableObject
 {
+    [Required]
     [JsonPropertyName("sentDateTimeUtc")]
-    public required DateTime SentDateTimeUtc { get; set; }
-    
-    [JsonPropertyName("chatId")]
-    public required long ChatId { get; set; }
+    public DateTime SentDateTimeUtc { get; set; }
 
+    [Required]
+    [JsonPropertyName("chatId")]
+    public long ChatId { get; set; }
+
+    [Required]
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
-    
+    public string Name { get; set; }
+
+    [Required]
     [JsonPropertyName("message")]
-    public required string Message { get; set; }
+    public string Message { get; set; }
+
+    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() => [];
 }

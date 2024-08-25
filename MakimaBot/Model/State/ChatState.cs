@@ -1,18 +1,24 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable disable
+
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class ChatState
+public class ChatState : ValidatableObject
 {
+    [Required]
     [JsonPropertyName("chatId")]
-    public required long ChatId { get; set; }
+    public long ChatId { get; set; }
 
-    /// <summary>
-    /// Chat or username
-    /// </summary>
+    [Required]
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
-    
+    public string Name { get; set; }
+
+    [Required]
     [JsonPropertyName("eventsState")]
-    public required EventsState EventsState { get; set; }
+    public EventsState EventsState { get; set; }
+
+    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() =>
+        EventsState.Validate();
 }

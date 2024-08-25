@@ -1,15 +1,23 @@
+#nullable disable
+
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public abstract class ScheduledMessageEventState
+public class ScheduledMessageEventState : ValidatableObject
 {
+    [Required]
     [JsonPropertyName("isEnabled")]
-    public required bool IsEnabled { get; set; }
+    public bool IsEnabled { get; set; }
 
+    [Required]
     [JsonPropertyName("lastTimeStampUtc")]
-    public required DateTime LastTimeStampUtc { get; set; }
+    public DateTime LastTimeStampUtc { get; set; }
 
+    [Required]
     [JsonPropertyName("nextStartTimeStampUtc")]
-    public required DateTime NextStartTimeStampUtc { get; set; }
+    public DateTime NextStartTimeStampUtc { get; set; }
+
+    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() => [];
 }

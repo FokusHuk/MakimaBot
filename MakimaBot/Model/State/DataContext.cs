@@ -3,7 +3,7 @@
 public class DataContext
 {
     private readonly BucketClient _bucketClient;
-    private BotState? _state;
+    public BotState State { get; private set; }
 
     public DataContext(BucketClient bucketClient)
     {
@@ -12,22 +12,35 @@ public class DataContext
 
     public async Task ConfigureAsync()
     {       
-        _state = await _bucketClient.LoadStateAsync();
+        State = await _bucketClient.LoadStateAsync();
+
+        var validationResults = State.Validate().ToList();
+
+        if (validationResults.Any())
+        {
+            var errorMessage = string
+                .Join("\n",
+                    validationResults
+                        .Select(result => $"{result.ObjectName}.{string
+                            .Join(",", result.ValidationResult.MemberNames)}: {result.ValidationResult.ErrorMessage}"));
+
+            throw new InvalidOperationException(errorMessage);
+        }
     }
 
     public async Task<bool> SaveChangesAsync()
     {
-        return await _bucketClient.TryUpdateState(_state);
+        return await _bucketClient.TryUpdateState(State);
     }
 
     public IEnumerable<BotError> GetAllErrors()
     {
-        return _state.Infrastructure.Errors;
+        return State.Infrastructure.Errors;
     }
 
     public void UpdateErrors(ICollection<BotError> errors)
     {
-        _state.Infrastructure.Errors = errors;
+        State.Infrastructure.Errors = errors;
     }
     
     public void AddOrUpdateError(DateTime creationDateTimeUtc, string errorMessage)
@@ -35,7 +48,7 @@ public class DataContext
         if (string.IsNullOrEmpty(errorMessage))
             throw new ArgumentException(errorMessage);
 
-        var error = _state.Infrastructure.Errors.SingleOrDefault(error => error.Message == errorMessage);
+        var error = State.Infrastructure.Errors.SingleOrDefault(error => error.Message == errorMessage);
 
         if (error is not null)
         {
@@ -44,13 +57,13 @@ public class DataContext
             return;
         }
 
-        if (_state.Infrastructure.Errors.Count > 50)
+        if (State.Infrastructure.Errors.Count > 50)
         {
             Console.WriteLine("Too many errors in state.");
             return;
         }
         
-        _state.Infrastructure.Errors.Add(new BotError
+        State.Infrastructure.Errors.Add(new BotError
         {
             LastSeenDateTimeUtc = creationDateTimeUtc,
             Message = errorMessage,
@@ -60,27 +73,27 @@ public class DataContext
 
     public ChatState? GetChatStateById(long chatId)
     {
-        return _state.Chats.SingleOrDefault(chat => chat.ChatId == chatId);
+        return State.Chats.SingleOrDefault(chat => chat.ChatId == chatId);
     }
 
     public IEnumerable<ChatState> GetAllChatStates()
     {
-        return _state.Chats;
+        return State.Chats;
     }
 
     public IEnumerable<UnknownChatMessage> GetAllUnknownChatMessages()
     {
-        return _state.Infrastructure.UnknownChatsMessages;
+        return State.Infrastructure.UnknownChatsMessages;
     }
 
     public void UpdateUnknownChatMessages(ICollection<UnknownChatMessage> unknownChatMessages)
     {
-        _state.Infrastructure.UnknownChatsMessages = unknownChatMessages;
+        State.Infrastructure.UnknownChatsMessages = unknownChatMessages;
     }
 
     public void AddUnknownMessage(DateTime sentDateTimeUtc, long chatId, string? message, string? username)
     {
-        if (_state.Infrastructure.UnknownChatsMessages.Count > 50)
+        if (State.Infrastructure.UnknownChatsMessages.Count > 50)
         {
             Console.WriteLine("Too many unknown messages in state.");
             return;
@@ -89,7 +102,7 @@ public class DataContext
         message ??= "Unknown message";
         username ??= "Unknown user";
         
-        _state.Infrastructure.UnknownChatsMessages.Add(new UnknownChatMessage
+        State.Infrastructure.UnknownChatsMessages.Add(new UnknownChatMessage
         {
             SentDateTimeUtc = sentDateTimeUtc,
             ChatId = chatId,
