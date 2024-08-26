@@ -59,7 +59,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
             _dataContext.UpdateUnknownChatMessages(Array.Empty<UnknownChatMessage>());
         }
 
-        if(!string.IsNullOrWhiteSpace(unknownMessagesReport) && !string.IsNullOrWhiteSpace(errorsReport))
+        if(string.IsNullOrWhiteSpace(unknownMessagesReport) && string.IsNullOrWhiteSpace(errorsReport))
         {
             var message = $"""
             *Daily Makima bot report*\n
