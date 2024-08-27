@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using MakimaBot.Model.Processors;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model;
@@ -8,6 +9,7 @@ public class ChatMessagesHandler
     private readonly TelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
     private readonly ChatCommandHandler _commandHandler;
+
     private const int UpdateMessagesLimit = 25;
 
     public ChatMessagesHandler(TelegramBotClient telegramBotClient, DataContext dataContext, ChatCommandHandler commandHandler)
@@ -72,115 +74,20 @@ public class ChatMessagesHandler
     {
         if (update.Message is not { } message)
             return;
-            
+
         var chatId = message.Chat.Id;
 
-        if(await CheckHealthAsync(message, chatId, cancellationToken))
-        {
-            return;
-        }
-    
         if (message.From != null)
         {
             var chatState = _dataContext.GetChatStateById(chatId);
 
-            if (chatState is null)
-            {
-                await ProcessUnknownChatMessageAsync(message, chatId, cancellationToken);
-            }
-            else
-            {
-                await ProcessTrustedChatAsync(message, chatState, cancellationToken);
-            }
+            await new HealthCheackProcessor(_telegramBotClient, chatId)
+            .ChainedWith(new UntrustedChatProcessor(_dataContext, _telegramBotClient, chatId))
+            .EndChainWith(new TrustedChatProcessor()
+                .SubchainedWith(new DailyActivityProcessor(_dataContext)
+                    .ChainedWith(new GptMessageProcessor(_commandHandler, _telegramBotClient))
+                    .EndChainWith(new RandomPhraseProcessor(_telegramBotClient))))
+            .Execute(message, chatState, cancellationToken);
         }
-    }
-    
-    private async Task<bool> CheckHealthAsync(Message message, long chatId, CancellationToken cancellationToken)
-    {
-        if (message.Sticker is { SetName: { } } sticker &&
-            sticker.SetName.Equals("makimapak", StringComparison.InvariantCultureIgnoreCase))
-        {
-            if (sticker.Emoji == "😤")
-            {
-                await _telegramBotClient.SendTextMessageAsync(
-                    chatId: chatId,
-                    text: "❤️",
-                    replyToMessageId: message.MessageId,
-                    cancellationToken: cancellationToken);
-            }
-
-            return true;
-        }
-        return false;
-    }
-
-    private async Task ProcessTrustedChatAsync(Message message, ChatState chatState, CancellationToken cancellationToken)
-    {
-        if(await HandleGptMessageAsync(message, chatState, cancellationToken))
-        {
-            return;
-        }
-
-        if (chatState.EventsState.ActivityStatistics.IsEnabled)
-        {
-            var chatActivityStatistics = chatState.EventsState.ActivityStatistics.Statistics;
-            if (chatActivityStatistics.ContainsKey(message.From.Id))
-                chatActivityStatistics[message.From.Id]++;
-            else
-                chatActivityStatistics[message.From.Id] = 1;
-
-            await _dataContext.SaveChangesAsync();
-        }
-
-        await SayRandomPhraseAsync(chatState.ChatId, cancellationToken);
-    }
-
-    private async Task<bool> HandleGptMessageAsync(Message message, ChatState chatState, CancellationToken cancellationToken)
-    {
-        if (!string.IsNullOrWhiteSpace(message.Text) && message.Text.Trim().StartsWith("@makima_daily_bot"))
-        {
-            await _commandHandler.HandleAsync(message, chatState, _telegramBotClient, cancellationToken);
-            return true;
-        }
-        return false;
-    }
-
-    private async Task SayRandomPhraseAsync(long chatId, CancellationToken cancellationToken) //todo: ответ моно сделать еще более живымб если использовать gpt
-    {
-        var random = new Random();
-        if (random.Next(10) < 1)
-        {
-            var reactions = new[]
-            {
-                "Я все вижу 👀",
-                "Хватит сюда писать",
-                "...",
-                "Не надо слов, просто погавкай 🐶",
-                "Я сейчас ливну отсюда",
-                "Ахахаххахахаха",
-                "До вечера 🌙"
-            };
-
-            await _telegramBotClient.SendTextMessageAsync(
-                chatId,
-                reactions[random.Next(reactions.Length)],
-                cancellationToken: cancellationToken);
-        }
-    }
-
-    private async Task ProcessUnknownChatMessageAsync(Message message, long chatId, CancellationToken cancellationToken)
-    {
-        // await _telegramBotClient.SendTextMessageAsync(
-        //     chatId: chatId,
-        //     text: "Привет! Я Макима.\nИ мне запрещают общаться с незнакомцами. Но если очень хочется, можете написать хозяину :)\nhttps://t.me/akima_yooukie",
-        //     cancellationToken: cancellationToken);
-        
-        _dataContext.AddUnknownMessage(
-            DateTime.UtcNow,
-            chatId,
-            message.Text,
-            message.From?.Username ?? message.From?.FirstName ?? message.From?.LastName ?? message.From?.Id.ToString());
-        
-        await _dataContext.SaveChangesAsync();
     }
 }
