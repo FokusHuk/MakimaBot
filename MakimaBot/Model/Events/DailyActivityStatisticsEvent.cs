@@ -3,20 +3,18 @@ using Telegram.Bot;
 
 namespace MakimaBot.Model.Events;
 
-public class ActivityStatisticsEvent : IChatEvent
+public class DailyActivityStatisticsEvent : IChatEvent
 {
-    private readonly TimeSpan statisticsTimeStartUtc =
-        DateTime.Parse("2023-01-01 20:00:00", CultureInfo.InvariantCulture).TimeOfDay;
+    private readonly TimeSpan statisticsTimeStartUtc = new TimeSpan(hours: 20, minutes: 0, seconds: 0);
 
-    private readonly TimeSpan statisticsTimeEndUtc =
-        DateTime.Parse("2023-01-01 20:30:00", CultureInfo.InvariantCulture).TimeOfDay;
+    private readonly TimeSpan statisticsTimeEndUtc = new TimeSpan(hours: 20, minutes: 30, seconds: 0);
 
     public bool ShouldLaunch(ChatState chat)
     {
         var currentDateTimeUtc = DateTime.UtcNow;
 
-        return chat.EventsState.ActivityStatistics.IsEnabled
-               && currentDateTimeUtc.Date != chat.EventsState.ActivityStatistics.LastTimeStampUtc.Date
+        return chat.EventsState.DailyActivityStatistics.IsEnabled
+               && currentDateTimeUtc.Date != chat.EventsState.DailyActivityStatistics.LastTimeStampUtc.Date
                && currentDateTimeUtc.TimeOfDay > statisticsTimeStartUtc
                && currentDateTimeUtc.TimeOfDay < statisticsTimeEndUtc;
     }
@@ -24,7 +22,7 @@ public class ActivityStatisticsEvent : IChatEvent
     public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
     {
         var membersStatistics = "";
-        foreach (var stats in chat.EventsState.ActivityStatistics.Statistics)
+        foreach (var stats in chat.EventsState.DailyActivityStatistics.Statistics)
         {
             var member = await telegramBotClient.GetChatMemberAsync(chat.ChatId, stats.Key);
             var memberName = member.User.Username ?? member.User.FirstName;
@@ -50,7 +48,7 @@ public class ActivityStatisticsEvent : IChatEvent
                 """);
         }
 
-        chat.EventsState.ActivityStatistics.Statistics.Clear();
-        chat.EventsState.ActivityStatistics.LastTimeStampUtc = DateTime.UtcNow;
+        chat.EventsState.DailyActivityStatistics.Statistics.Clear();
+        chat.EventsState.DailyActivityStatistics.LastTimeStampUtc = DateTime.UtcNow;
     }
 }

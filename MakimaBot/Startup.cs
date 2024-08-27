@@ -49,7 +49,8 @@ public class Startup
 
         services.AddSingleton<IChatEvent, MorningMessageEvent>();
         services.AddSingleton<IChatEvent, EveningMessageEvent>();
-        services.AddSingleton<IChatEvent, ActivityStatisticsEvent>();
+        services.AddSingleton<IChatEvent, DailyActivityStatisticsEvent>();
+        services.AddSingleton<IChatEvent, MonthlyActivityStatisticsEvent>();
         services.AddSingleton<IChatEvent, AdministrationDailyReportNotificationEvent>();
         services.AddSingleton<IChatEvent, AppVersionNotificationEvent>(provider =>
             new AppVersionNotificationEvent(changelogs));
