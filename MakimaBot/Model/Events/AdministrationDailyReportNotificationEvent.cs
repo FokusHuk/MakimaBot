@@ -9,11 +9,8 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
     private readonly TelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
 
-    private readonly TimeSpan notificationTimeStartUtc =
-        DateTime.Parse("2023-01-01 18:00:00", CultureInfo.InvariantCulture).TimeOfDay;
-
-    private readonly TimeSpan notificationTimeEndUtc =
-        DateTime.Parse("2023-01-01 18:30:00", CultureInfo.InvariantCulture).TimeOfDay;
+    private readonly TimeSpan notificationTimeStartUtc = new TimeSpan(hours: 18, minutes: 0, seconds: 0);
+    private readonly TimeSpan notificationTimeEndUtc = new TimeSpan(hours: 18, minutes: 30, seconds: 0);
 
     public AdministrationDailyReportNotificationEvent(
         TelegramBotClient telegramBotClient,
@@ -60,6 +57,18 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
 
             _dataContext.UpdateUnknownChatMessages(Array.Empty<UnknownChatMessage>());
+        }
+
+        if(string.IsNullOrWhiteSpace(unknownMessagesReport) && string.IsNullOrWhiteSpace(errorsReport))
+        {
+            var message = $"""
+            *Daily Makima bot report*\n
+            Поздравляю, таска не сдохла!!!! Просто сегодня не было ни новых рандомных типОв, ни ошибок.  
+            """;
+            await _telegramBotClient.SendTextMessageAsync(
+                chat.ChatId,
+                message,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
         }
 
         chat.EventsState.DailyReportNotification.LastTimeStampUtc = DateTime.UtcNow;
