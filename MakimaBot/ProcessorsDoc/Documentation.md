@@ -46,7 +46,7 @@ Chain.Execute()
 ProcessorA.Execute()
 ```
 
-![alt text](EndChainWith1.png "EndChainWith()")
+![alt text](EndChainWith.png "EndChainWith()")
 
 
 ### Пример создания цепочки
