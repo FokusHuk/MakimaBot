@@ -8,15 +8,15 @@ public class ChatMessagesHandler
 {
     private readonly TelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
-    private readonly ChatCommandHandler _commandHandler;
+    private readonly ProcessorComponent _processorComponent;
 
     private const int UpdateMessagesLimit = 25;
 
-    public ChatMessagesHandler(TelegramBotClient telegramBotClient, DataContext dataContext, ChatCommandHandler commandHandler)
+    public ChatMessagesHandler(TelegramBotClient telegramBotClient, DataContext dataContext, ProcessorComponent processorComponent)
     {
         _telegramBotClient = telegramBotClient;
         _dataContext = dataContext;
-        _commandHandler = commandHandler;
+        _processorComponent = processorComponent;
     }
 
     public async Task TryHandleUpdatesAsync(CancellationToken cancellationToken)
@@ -79,15 +79,9 @@ public class ChatMessagesHandler
 
         if (message.From != null)
         {
-            var chatState = _dataContext.GetChatStateById(chatId);
-
-            await new HealthCheackProcessor(_telegramBotClient, chatId)
-            .ChainedWith(new UntrustedChatProcessor(_dataContext, _telegramBotClient, chatId))
-            .EndChainWith(new TrustedChatProcessor()
-                .SubchainedWith(new DailyActivityProcessor(_dataContext)
-                    .ChainedWith(new GptMessageProcessor(_commandHandler, _telegramBotClient))
-                    .EndChainWith(new RandomPhraseProcessor(_telegramBotClient))))
-            .Execute(message, chatState, cancellationToken);
+            var processorsChain = _processorComponent.GetProcessor();
+            
+            await processorsChain.Execute(message, chatId, cancellationToken);
         }
     }
 }

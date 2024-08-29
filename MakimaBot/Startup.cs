@@ -8,6 +8,7 @@ using Telegram.Bot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using MakimaBot.Model.Processors;
 
 public class Startup
 {
@@ -74,6 +75,14 @@ public class Startup
             var httpClientFactory = provider.GetService<IHttpClientFactory>();
             return new GptClient(httpClientFactory, applicationConfig.GptConfig);
         });
+
+        services.AddTransient<DailyActivityProcessor>();
+        services.AddTransient<GptMessageProcessor>();
+        services.AddTransient<HealthCheackProcessor>();
+        services.AddTransient<RandomPhraseProcessor>();
+        services.AddTransient<TrustedChatProcessor>();
+        services.AddTransient<UntrustedChatProcessor>();
+        services.AddSingleton<ProcessorComponent>();
 
         services.AddControllers();
     }

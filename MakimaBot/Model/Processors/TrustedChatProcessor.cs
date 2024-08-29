@@ -5,10 +5,19 @@ namespace MakimaBot.Model.Processors;
 
 public class TrustedChatProcessor : ProcessorBase
 {
-    protected override Task ExecuteBody(Message message, ChatState chatState, CancellationToken cancellationToken)
+    public TrustedChatProcessor(DataContext dataContext) : base(dataContext)
+    {
+
+    }
+
+    protected override Task ExecuteBody(Message message, long chatId, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    protected override bool ExecuteCondition(Message message, ChatState chatState) => chatState is not null;                               
+    protected override bool ExecuteCondition(Message message, long chatId, CancellationToken cancellationToken)
+    {
+        var chatState = _dataContext.GetChatStateById(chatId);
+        return chatState is not null;
+    }                               
 }

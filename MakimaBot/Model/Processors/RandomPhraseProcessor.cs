@@ -7,13 +7,17 @@ public class RandomPhraseProcessor : ProcessorBase
 {
     private TelegramBotClient _telegramBotClient;
 
-    public RandomPhraseProcessor(TelegramBotClient telegramBotClient)
+    public RandomPhraseProcessor(DataContext dataContext, 
+                                 TelegramBotClient telegramBotClient)
+                                 : base(dataContext)
     {
         _telegramBotClient = telegramBotClient;
     }
 
-    protected override  async Task ExecuteBody(Message message, ChatState chatState, CancellationToken cancellationToken)
+    protected override  async Task ExecuteBody(Message message, long chatId, CancellationToken cancellationToken)
     {
+        var chatState = _dataContext.GetChatStateById(chatId);
+        
         var reactions = new[]
             {
                 "Я все вижу 👀",
@@ -31,5 +35,5 @@ public class RandomPhraseProcessor : ProcessorBase
             cancellationToken: cancellationToken);
     }
 
-    protected override bool ExecuteCondition(Message message, ChatState chatState) => new Random().Next(10) < 1;
+    protected override bool ExecuteCondition(Message message, long chatId, CancellationToken cancellationToken) => new Random().Next(10) < 1;
 }
