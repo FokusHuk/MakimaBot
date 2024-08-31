@@ -28,6 +28,7 @@ public class ChatCommandHandler
             await _telegramBotClient.SendTextMessageAsync(
                 chatState.ChatId,
                 "Неизвестная команда", // todo: сообщить юзеру, что меншн это команда
+                replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -43,6 +44,7 @@ public class ChatCommandHandler
             await _telegramBotClient.SendTextMessageAsync(
                 chatState.ChatId,
                 "Команда не распознана, запросите список доступных команд (list)",
+                replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
             return;
         }
