@@ -22,4 +22,4 @@ jobs:
     - name: get app version
       id: app-version
       run: |
-        echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/appversion.json)"
+        echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/application.config.json)"
