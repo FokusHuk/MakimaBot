@@ -7,9 +7,12 @@ public class BotController : ControllerBase
 {
     private readonly IBotService _botService;
     private readonly DataContext _dataContext;
-    private readonly StateUpdater _stateUpdater;
+    private readonly BotStateUpdater _stateUpdater;
 
-    public BotController(IBotService botService, DataContext dataContext, StateUpdater stateUpdater)
+    public BotController(
+        IBotService botService,
+        DataContext dataContext,
+        BotStateUpdater stateUpdater)
     {
         _botService = botService;
         _dataContext = dataContext;

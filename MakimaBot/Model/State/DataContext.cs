@@ -2,10 +2,10 @@
 
 public class DataContext
 {
-    private readonly BucketClient _bucketClient;
+    private readonly IBucketClient _bucketClient;
     public BotState State { get; private set; }
 
-    public DataContext(BucketClient bucketClient)
+    public DataContext(IBucketClient bucketClient)
     {
         _bucketClient = bucketClient;
     }

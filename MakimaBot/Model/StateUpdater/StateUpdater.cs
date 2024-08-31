@@ -3,14 +3,14 @@ using Newtonsoft.Json.Linq;
 
 namespace MakimaBot.Model;
 
-public class StateUpdater
+public abstract class StateUpdaterBase<T> where T : class
 {
-    private readonly BucketClient _bucketClient;
+    protected readonly IBucketClient _bucketClient;
     private readonly ITextDiffPrinter _textDiffPrinter;
     private readonly IEnumerable<Migration> _migrations;
 
-    public StateUpdater(
-        BucketClient bucketClient,
+    public StateUpdaterBase(
+        IBucketClient bucketClient,
         ITextDiffPrinter textDiffPrinter,
         IEnumerable<Migration> migrations)
     {
@@ -25,7 +25,7 @@ public class StateUpdater
         var jObjectState = JsonConvert.DeserializeObject<JObject>(jsonState);
         var stateBeforeMigration = jObjectState.ToString();
 
-        var currentVersion = (int)jObjectState["stateVersion"];
+        var currentVersion = GetCurrentVersion(jObjectState);
 
         var migrationsToExecute = _migrations
             .Where(migration => migration.Version > currentVersion)
@@ -43,11 +43,9 @@ public class StateUpdater
         _textDiffPrinter.DumpDiff(stateBeforeMigration, stateAfterMigration);
 
 
-        var botState = GetValidatedState(stateAfterMigration);
+        var botState = GetValidatedState<T>(stateAfterMigration);
 
-        botState.StateVersion = migrationsToExecute.Last().Version;
-
-        if (!await _bucketClient.TryUpdateState(botState))
+        if (!await TryUpdateStateAsync(botState, migrationsToExecute.Last().Version))
         {
             throw new InvalidOperationException("Unable to apply state changes.");
         }
@@ -55,11 +53,11 @@ public class StateUpdater
         Console.WriteLine("Migrations applied successfully.");
     }
 
-    private BotState GetValidatedState(string jsonState)
+    private T GetValidatedState<T>(string jsonState)
     {
         try
         {
-            return System.Text.Json.JsonSerializer.Deserialize<BotState>(jsonState)
+            return System.Text.Json.JsonSerializer.Deserialize<T>(jsonState)
                 ?? throw new InvalidOperationException("Unable to deserialize state via migrations validation.");
         }
         catch (System.Text.Json.JsonException exception)
@@ -67,4 +65,8 @@ public class StateUpdater
             throw new InvalidOperationException("State is invalid after applying migrations. Check for migrations.", exception);
         }
     }
+
+    protected abstract int GetCurrentVersion(JObject jObjectState);
+
+    protected abstract Task<bool> TryUpdateStateAsync(T state, int newStateVersion);
 }

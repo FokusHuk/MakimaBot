@@ -48,7 +48,7 @@ public class Startup(IConfiguration configuration)
             .ValidateOnStart();
 
 
-        services.AddSingleton<BucketClient>(provider =>
+        services.AddSingleton<IBucketClient, BucketClient>(provider =>
         {
             var bucketOptions = provider.GetRequiredService<IOptions<BucketOptions>>().Value;
 
@@ -101,7 +101,7 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ChatCommand, GptChatCommand>();
         services.AddSingleton<IGptClient, GptClient>();
 
-        services.AddSingleton<StateUpdater>();
+        services.AddSingleton<BotStateUpdater>();
         
         services.AddSingleton<ITextDiffPrinter, ConsoleTextDiffPrinter>();
         
