@@ -13,19 +13,6 @@ public class DataContext
     public async Task ConfigureAsync()
     {       
         State = await _bucketClient.LoadStateAsync();
-
-        var validationResults = State.Validate().ToList();
-
-        if (validationResults.Any())
-        {
-            var errorMessage = string
-                .Join("\n",
-                    validationResults
-                        .Select(result => $"{result.ObjectName}.{string
-                            .Join(",", result.ValidationResult.MemberNames)}: {result.ValidationResult.ErrorMessage}"));
-
-            throw new InvalidOperationException(errorMessage);
-        }
     }
 
     public async Task<bool> SaveChangesAsync()

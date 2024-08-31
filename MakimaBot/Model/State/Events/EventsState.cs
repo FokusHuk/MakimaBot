@@ -1,36 +1,24 @@
-﻿#nullable disable
-
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class EventsState : ValidatableObject
+public class EventsState
 {
-    [Required]
     [JsonPropertyName("morningMessageEventState")]
-    public MorningMessageEventState MorningMessage { get; set; }
+    public required MorningMessageEventState MorningMessage { get; set; }
 
-    [Required]
     [JsonPropertyName("activityStatisticsEventState")]
-    public ActivityStatisticsEventState ActivityStatistics { get; set; }
+    public required ActivityStatisticsEventState ActivityStatistics { get; set; }
 
-    [Required]
     [JsonPropertyName("dailyReportNotificationEventState")]
-    public DailyReportNotificationEventState DailyReportNotification { get; set; }
+    public required DailyReportNotificationEventState DailyReportNotification { get; set; }
 
-    [Required]
     [JsonPropertyName("appVersionNotificationEventState")]
-    public AppVersionNotificationEventState AppVersionNotification { get; set; }
+    public required AppVersionNotificationEventState AppVersionNotification { get; set; }
 
-    [Required]
     [JsonPropertyName("eveningMessageEventState")]
-    public EveningMessageEventState EveningMessage { get; set; }
+    public required EveningMessageEventState EveningMessage { get; set; }
 
-    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() =>
-        MorningMessage.Validate()
-            .Concat(ActivityStatistics.Validate())
-            .Concat(DailyReportNotification.Validate())
-            .Concat(AppVersionNotification.Validate())
-            .Concat(EveningMessage.Validate());
+    [JsonPropertyName("newEventState")]
+    public required EveningMessageEventState NewEventState { get; set; }
 }

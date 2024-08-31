@@ -1,23 +1,15 @@
-﻿#nullable disable
-
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class BotError : ValidatableObject
+public  class BotError
 {   
-    [Required]
     [JsonPropertyName("message")]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 
-    [Required]
     [JsonPropertyName("lastSeenDateTimeUtc")]
-    public DateTime LastSeenDateTimeUtc { get; set; }
+    public required DateTime LastSeenDateTimeUtc { get; set; }
 
-    [Required]
     [JsonPropertyName("count")]
-    public int Count { get; set; }
-
-    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() => [];
+    public required int Count { get; set; }
 }

@@ -101,6 +101,13 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ChatCommand, GptChatCommand>();
         services.AddSingleton<IGptClient, GptClient>();
 
+        services.AddSingleton<StateUpdater>();
+        
+        services.AddSingleton<ITextDiffPrinter, ConsoleTextDiffPrinter>();
+        
+        services.AddSingleton<Migration, TestAddMigration>();
+
+
         services.AddControllers();
     }
 

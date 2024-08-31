@@ -1,23 +1,15 @@
-﻿#nullable disable
-
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class ActivityStatisticsEventState : ValidatableObject
+public class ActivityStatisticsEventState
 {
-    [Required]
     [JsonPropertyName("isEnabled")]
-    public bool IsEnabled { get; set; }
+    public required bool IsEnabled { get; set; }
 
-    [Required]
     [JsonPropertyName("lastTimeStampUtc")]
-    public DateTime LastTimeStampUtc { get; set; }
+    public required DateTime LastTimeStampUtc { get; set; }
 
-    [Required]
     [JsonPropertyName("statistics")]
-    public Dictionary<long, int> Statistics { get; set; }
-
-    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() => [];
+    public required Dictionary<long, int> Statistics { get; set; }
 }

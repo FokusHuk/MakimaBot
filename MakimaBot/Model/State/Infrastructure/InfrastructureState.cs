@@ -1,23 +1,12 @@
-#nullable disable
-
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class InfrastructureState : ValidatableObject
+public  class InfrastructureState
 {
-    [Required]
     [JsonPropertyName("errors")]
-    public ICollection<BotError> Errors { get; set; }
+    public required ICollection<BotError> Errors { get; set; }
 
-    [Required]
     [JsonPropertyName("unknownChatMessages")]
-    public ICollection<UnknownChatMessage> UnknownChatsMessages { get; set; }
-
-    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() =>
-        Errors
-            .SelectMany(error => error.Validate())
-            .Concat(UnknownChatsMessages
-                .SelectMany(message => message.Validate()));
+    public required ICollection<UnknownChatMessage> UnknownChatsMessages { get; set; }
 }

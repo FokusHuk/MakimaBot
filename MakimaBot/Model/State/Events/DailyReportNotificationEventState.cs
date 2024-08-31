@@ -1,19 +1,12 @@
-﻿#nullable disable
-
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class DailyReportNotificationEventState : ValidatableObject
+public class DailyReportNotificationEventState 
 {
-    [Required]
     [JsonPropertyName("isEnabled")]
-    public bool IsEnabled { get; set; }
+    public required bool IsEnabled { get; set; }
 
-    [Required]
     [JsonPropertyName("lastTimeStampUtc")]
-    public DateTime LastTimeStampUtc { get; set; }
-
-    protected override IEnumerable<CompositeValidationResult> ValidateCompositeProperties() => [];
+    public required DateTime LastTimeStampUtc { get; set; }
 }
