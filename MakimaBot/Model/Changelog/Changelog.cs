@@ -1,13 +1,19 @@
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+
+public class ChangelogOptions
+{
+    [Required]
+    public IEnumerable<Changelog> Changelogs { get; set; }
+}
 
 public class Changelog
 {
-    [JsonPropertyName("id")]
-    public required int Id { get; set; }
+    [Required]
+    public int Id { get; set; }
 
-    [JsonPropertyName("version")]
-    public required string Version { get; set; }
+    [Required]
+    public string Version { get; set; }
 
-    [JsonPropertyName("description")]
-    public required string Description { get; set; }
+    [Required]
+    public string Description { get; set; }
 }

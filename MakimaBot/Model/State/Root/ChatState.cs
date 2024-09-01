@@ -2,17 +2,14 @@
 
 namespace MakimaBot.Model;
 
-public class UnknownChatMessage
+public  class ChatState
 {
-    [JsonPropertyName("sentDateTimeUtc")]
-    public required DateTime SentDateTimeUtc { get; set; }
-    
     [JsonPropertyName("chatId")]
     public required long ChatId { get; set; }
 
     [JsonPropertyName("name")]
     public required string Name { get; set; }
-    
-    [JsonPropertyName("message")]
-    public required string Message { get; set; }
+
+    [JsonPropertyName("eventsState")]
+    public required EventsState EventsState { get; set; }
 }
