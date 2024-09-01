@@ -31,7 +31,7 @@ jobs:
       run: |
         IMAGE_NAME="${{ env.registry }}/${{ env.image_name }}:${{ steps.app-version.outputs.APP_VERSION }}"
         if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
-          echo "Error: Image version $IMAGE_NAME already exists!"
+          echo "Error: Image version $IMAGE_NAME already exists! Update application version."
           exit 1
         fi
     

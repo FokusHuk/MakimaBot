@@ -39,6 +39,14 @@ jobs:
     - name: cr.yandex auth
       run: echo '${{ secrets.REGISTRY_KEY }}' | docker login -u json_key --password-stdin cr.yandex
 
+    - name: check if image version exists
+      run: |
+        IMAGE_NAME="${{ env.registry }}/${{ env.image_name }}:${{ steps.app-version.outputs.APP_VERSION }}"
+        if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+          echo "Error: Image version $IMAGE_NAME already exists! Update application version."
+          exit 1
+        fi
+
     - name: tag docker image
       run: |
         docker tag makima-bot ${{ env.registry }}/${{ env.image_name }}:${{ steps.app-version.outputs.APP_VERSION }}
