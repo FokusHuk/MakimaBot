@@ -2,16 +2,16 @@ using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
-public class DailyActivityProcessor : ProcessorBase
+public class DailyActivityProcessor : ChatMessageProcessorBase
 {
-    protected override bool _continueAnyway => true;
+    protected override bool СontinueAnyway => true;
 
     public DailyActivityProcessor(DataContext dataContext) : base(dataContext)
     {
 
     }
 
-    protected override async Task ExecuteBody(Message message, long chatId, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         var chatState = _dataContext.GetChatStateById(chatId);
 
@@ -24,7 +24,7 @@ public class DailyActivityProcessor : ProcessorBase
         await _dataContext.SaveChangesAsync();
     }
 
-    protected override bool ExecuteCondition(Message message, long chatId, CancellationToken cancellationToken)
+    protected override bool ShouldLaunchAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         var chatState = _dataContext.GetChatStateById(chatId);
         return chatState.EventsState.ActivityStatistics.IsEnabled;

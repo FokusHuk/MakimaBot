@@ -63,6 +63,11 @@ public class DataContext
         return State.Chats.SingleOrDefault(chat => chat.ChatId == chatId);
     }
 
+    public bool IsChatExists(long chatId)
+    {
+        return GetChatStateById(chatId) is not null;
+    }
+
     public IEnumerable<ChatState> GetAllChatStates()
     {
         return State.Chats;

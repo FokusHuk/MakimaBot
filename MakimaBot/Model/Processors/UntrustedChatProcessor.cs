@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
-public class UntrustedChatProcessor : ProcessorBase
+public class UntrustedChatProcessor : ChatMessageProcessorBase
 {
     private readonly TelegramBotClient _telegramBotClient;
 
@@ -15,13 +15,8 @@ public class UntrustedChatProcessor : ProcessorBase
         _telegramBotClient = telegramBotClient;
     }
 
-    protected override async Task ExecuteBody(Message message, long chatId, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
-        await _telegramBotClient.SendTextMessageAsync(
-               chatId: chatId,
-               text: "Привет! Я Макима.\nИ мне запрещают общаться с незнакомцами. Но если очень хочется, можете написать хозяину :)",//\nhttps://t.me/akima_yooukie",
-               cancellationToken: cancellationToken);
-
         _dataContext.AddUnknownMessage(
             sentDateTimeUtc: DateTime.UtcNow,
             chatId: chatId,
@@ -31,9 +26,8 @@ public class UntrustedChatProcessor : ProcessorBase
         await _dataContext.SaveChangesAsync();
     }
 
-    protected override bool ExecuteCondition(Message message, long chatId, CancellationToken cancellationToken)
+    protected override bool ShouldLaunchAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
-        var chatState = _dataContext.GetChatStateById(chatId);
-        return chatState is null;
+        return !_dataContext.IsChatExists(chatId);
     }
 }

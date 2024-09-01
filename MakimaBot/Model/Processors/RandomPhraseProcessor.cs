@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
-public class RandomPhraseProcessor : ProcessorBase
+public class RandomPhraseProcessor : ChatMessageProcessorBase
 {
     private TelegramBotClient _telegramBotClient;
 
@@ -14,7 +14,7 @@ public class RandomPhraseProcessor : ProcessorBase
         _telegramBotClient = telegramBotClient;
     }
 
-    protected override  async Task ExecuteBody(Message message, long chatId, CancellationToken cancellationToken)
+    protected override  async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         var chatState = _dataContext.GetChatStateById(chatId);
         
@@ -35,5 +35,5 @@ public class RandomPhraseProcessor : ProcessorBase
             cancellationToken: cancellationToken);
     }
 
-    protected override bool ExecuteCondition(Message message, long chatId, CancellationToken cancellationToken) => new Random().Next(10) < 1;
+    protected override bool ShouldLaunchAsync(Message message, long chatId, CancellationToken cancellationToken) => new Random().Next(10) < 1;
 }

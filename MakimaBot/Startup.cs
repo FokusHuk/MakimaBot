@@ -115,7 +115,10 @@ public class Startup(IConfiguration configuration)
         services.AddTransient<RandomPhraseProcessor>();
         services.AddTransient<TrustedChatProcessor>();
         services.AddTransient<UntrustedChatProcessor>();
+
         services.AddSingleton<ProcessorComponent>();
+        services.AddSingleton<ProcessorsChainFactory, DefaultProcessorsChainFactory>();
+
 
         services.AddControllers();
     }

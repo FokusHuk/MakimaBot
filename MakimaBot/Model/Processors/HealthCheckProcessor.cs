@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
-public class HealthCheackProcessor : ProcessorBase
+public class HealthCheackProcessor : ChatMessageProcessorBase
 {
     private TelegramBotClient _telegramBotClient;
 
@@ -15,7 +15,7 @@ public class HealthCheackProcessor : ProcessorBase
         _telegramBotClient = telegramBotClient;
     }
 
-    protected override async Task ExecuteBody(Message message, long chatId, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         if (message.Sticker.Emoji == "😤")
         {
@@ -27,7 +27,7 @@ public class HealthCheackProcessor : ProcessorBase
         }
     }
 
-    protected override bool ExecuteCondition(Message message, long chatId, CancellationToken cancellationToken)
+    protected override bool ShouldLaunchAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         return message.Sticker is { SetName: { } } sticker &&
             sticker.SetName.Equals("makimapak", StringComparison.InvariantCultureIgnoreCase);

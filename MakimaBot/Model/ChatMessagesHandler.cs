@@ -8,15 +8,17 @@ public class ChatMessagesHandler
 {
     private readonly TelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
-    private readonly ProcessorComponent _processorComponent;
+    private readonly ProcessorsChainFactory _processorsChainFactory;
 
     private const int UpdateMessagesLimit = 25;
 
-    public ChatMessagesHandler(TelegramBotClient telegramBotClient, DataContext dataContext, ProcessorComponent processorComponent)
+    public ChatMessagesHandler(TelegramBotClient telegramBotClient,
+                               DataContext dataContext, 
+                               ProcessorsChainFactory processorsChainFactory)
     {
         _telegramBotClient = telegramBotClient;
         _dataContext = dataContext;
-        _processorComponent = processorComponent;
+        _processorsChainFactory = processorsChainFactory;
     }
 
     public async Task TryHandleUpdatesAsync(CancellationToken cancellationToken)
@@ -75,13 +77,11 @@ public class ChatMessagesHandler
         if (update.Message is not { } message)
             return;
 
-        var chatId = message.Chat.Id;
-
         if (message.From != null)
         {
-            var processorsChain = _processorComponent.GetProcessor();
+            var processorsChain = _processorsChainFactory.CreateChain();
             
-            await processorsChain.Execute(message, chatId, cancellationToken);
+            await processorsChain.ProcessChainAsync(message, message.Chat.Id, cancellationToken);
         }
     }
 }
