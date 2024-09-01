@@ -31,4 +31,4 @@ RUN dotnet build -c Release -o /app/build
 
 FROM build-tests AS tests
 WORKDIR /src/MakimaBot.Tests
-ENTRYPOINT ["dotnet", "test", "/app/build/MakimaBot.Tests.dll", "--no-build", "--verbosity", "detailed", "--logger:console;verbosity=detailed"]
+ENTRYPOINT ["dotnet", "test", "/app/build/MakimaBot.Tests.dll", "--no-build", "--logger:console;verbosity=normal"]
