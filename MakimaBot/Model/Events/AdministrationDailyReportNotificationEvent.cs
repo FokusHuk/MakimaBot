@@ -62,7 +62,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
         if(string.IsNullOrWhiteSpace(unknownMessagesReport) && string.IsNullOrWhiteSpace(errorsReport))
         {
             var message = $"""
-            *Daily Makima bot report*
+            *Daily Makima bot report* 
             Поздравляю, таска не сдохла!!!! Просто сегодня не было ни новых рандомных типОв, ни ошибок.  
             """;
             await _telegramBotClient.SendTextMessageAsync(
