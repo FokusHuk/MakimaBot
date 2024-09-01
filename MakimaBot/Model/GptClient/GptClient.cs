@@ -1,6 +1,7 @@
 #nullable disable
 using System.Text.Json;
 using MakimaBot.Model.Config;
+using Microsoft.Extensions.Options;
 
 namespace MakimaBot.Model;
 
@@ -8,14 +9,14 @@ public class GptClient : IGptClient
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
-    private readonly GptConfig _configuration;
+    private readonly IOptions<GptOptions> _gptOptions;
 
     private const string DefaultRole = " Тебя зовут Макима. Ты добрая и общительная девушка. Ты мой собеседник. Поддерживай разговор";
 
-    public GptClient(IHttpClientFactory httpClientFactory, GptConfig configuration)
+    public GptClient(IHttpClientFactory httpClientFactory, IOptions<GptOptions> gptOptions)
     {
         _httpClientFactory = httpClientFactory;
-        _configuration = configuration;
+        _gptOptions = gptOptions;
     }
 
     public async Task<GptTextCompletionResponse> SendAsync(string promt)
@@ -24,7 +25,7 @@ public class GptClient : IGptClient
 
         var requestBody = new GptTextCompletionRequest
         {
-            ModelUri = _configuration.ModelUrl,
+            ModelUri = _gptOptions.Value.ModelUrl,
             CompletionOptions = new GptTextCompletionOptions
             {
                 Stream = false,
@@ -63,8 +64,8 @@ public class GptClient : IGptClient
     private HttpClient CreateClient()
     {
         var httpClient = _httpClientFactory.CreateClient();
-        httpClient.BaseAddress = new Uri(_configuration.Url);
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Api-Key {_configuration.ApiKey}");
+        httpClient.BaseAddress = new Uri(_gptOptions.Value.Url);
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Api-Key {_gptOptions.Value.ApiKey}");
         return httpClient;
     }
 }

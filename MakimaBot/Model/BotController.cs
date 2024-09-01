@@ -6,18 +6,26 @@ namespace MakimaBot.Model;
 public class BotController : ControllerBase
 {
     private readonly IBotService _botService;
+    private readonly DataContext _dataContext;
+    private readonly BotStateUpdater _stateUpdater;
 
-    public BotController(IBotService botService)
+    public BotController(
+        IBotService botService,
+        DataContext dataContext,
+        BotStateUpdater stateUpdater)
     {
         _botService = botService;
+        _dataContext = dataContext;
+        _stateUpdater = stateUpdater;
     }
 
     [HttpPost]
     [Route("")]
     public async Task<IActionResult> ProcessAsync(CancellationToken cancellationToken)
     {
+        await _stateUpdater.EnsureUpdateAsync(cancellationToken);
         await _botService.ProcessAsync(cancellationToken);
-        
+
         return Ok();
     }
 
@@ -29,5 +37,14 @@ public class BotController : ControllerBase
         {
             Status = "Healthy"
         });
+    }
+
+    [HttpGet]
+    [Route("state")]
+    public async Task<IActionResult> GetStateAsync(CancellationToken cancellationToken)
+    {
+        await _dataContext.ConfigureAsync();
+
+        return new JsonResult(_dataContext.State);
     }
 }

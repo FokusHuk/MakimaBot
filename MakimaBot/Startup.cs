@@ -8,52 +8,82 @@ using Telegram.Bot;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using MakimaBot.Model.Processors;
 
-public class Startup
+public class Startup(IConfiguration configuration)
 {
+    private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+
     public void ConfigureServices(IServiceCollection services)
     {
-        var configFile = File.ReadAllText("config/config.json");
-        var applicationConfig = JsonSerializer.Deserialize<ApplicationConfig>(configFile)
-            ?? throw new InvalidOperationException("Unable to load application config");
+        services
+            .AddOptions<ApplicationOptions>()
+            .Bind(_configuration)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
-        var changelogFile = File.ReadAllText("changelog/changelog.json");
-        var changelogs = JsonSerializer.Deserialize<Changelog[]>(changelogFile)
-            ?? throw new InvalidOperationException("Unable to load changelog file");
+        services
+            .AddOptions<ChangelogOptions>()
+            .Bind(_configuration)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services
+            .AddOptions<TelegramOptions>()
+            .Bind(_configuration.GetSection(TelegramOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services
+            .AddOptions<BucketOptions>()
+            .Bind(_configuration.GetSection(BucketOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services
+            .AddOptions<GptOptions>()
+            .Bind(_configuration.GetSection(GptOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
 
-        services.AddSingleton<BucketClient>(provider =>
+        services.AddSingleton<IBucketClient, BucketClient>(provider =>
         {
+            var bucketOptions = provider.GetRequiredService<IOptions<BucketOptions>>().Value;
+
             var s3Config = new AmazonS3Config
             {
-                ServiceURL = applicationConfig.BucketConfig.ServiceUrl,
+                ServiceURL = bucketOptions.ServiceUrl,
                 ForcePathStyle = true
             };
                 
             var s3Client = new AmazonS3Client(
-                applicationConfig.BucketConfig.AccessKeyId,
-                applicationConfig.BucketConfig.SecretAccessKey,
+                bucketOptions.AccessKeyId,
+                bucketOptions.SecretAccessKey,
                 s3Config);
 
             return new BucketClient(
                 s3Client,
-                applicationConfig.BucketConfig.BucketName,
-                applicationConfig.BucketConfig.StateFileName);
+                bucketOptions.BucketName,
+                bucketOptions.StateFileName);
         });
 
         services.AddSingleton<DataContext>();
 
-        services.AddSingleton<TelegramBotClient>(provider => 
-            new TelegramBotClient(applicationConfig.TelegramBotToken));
+        services.AddSingleton<TelegramBotClient>(provider =>
+        {
+            var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
+            return new TelegramBotClient(telegramOptions.Token);
+        });
 
 
         services.AddSingleton<IChatEvent, MorningMessageEvent>();
         services.AddSingleton<IChatEvent, EveningMessageEvent>();
         services.AddSingleton<IChatEvent, ActivityStatisticsEvent>();
         services.AddSingleton<IChatEvent, AdministrationDailyReportNotificationEvent>();
-        services.AddSingleton<IChatEvent, AppVersionNotificationEvent>(provider =>
-            new AppVersionNotificationEvent(changelogs));
+        services.AddSingleton<IChatEvent, AppVersionNotificationEvent>();
 
         services.AddSingleton<ChatEventsHandler>();
         services.AddSingleton<ChatMessagesHandler>();
@@ -70,11 +100,14 @@ public class Startup
 
         services.AddSingleton<ChatCommandHandler>();
         services.AddSingleton<ChatCommand, GptChatCommand>();
-        services.AddSingleton<IGptClient, GptClient>(provider =>
-        {
-            var httpClientFactory = provider.GetService<IHttpClientFactory>();
-            return new GptClient(httpClientFactory, applicationConfig.GptConfig);
-        });
+        services.AddSingleton<IGptClient, GptClient>();
+
+        services.AddSingleton<BotStateUpdater>();
+        
+        services.AddSingleton<ITextDiffPrinter, ConsoleTextDiffPrinter>();
+        
+        services.AddSingleton<Migration, TestAddMigration>();
+
 
         services.AddTransient<DailyActivityProcessor>();
         services.AddTransient<GptMessageProcessor>();

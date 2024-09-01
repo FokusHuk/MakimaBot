@@ -1,22 +1,23 @@
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 
 namespace MakimaBot.Model.Events;
 
 public class AppVersionNotificationEvent : IChatEvent
 {
-    private readonly IEnumerable<Changelog> _changelogs;
+    private readonly IOptions<ChangelogOptions> _changelogoptions;
 
-    public AppVersionNotificationEvent(IEnumerable<Changelog> changelogs)
+    public AppVersionNotificationEvent(IOptions<ChangelogOptions> changelogOptions)
     {
-        _changelogs = changelogs;
+        _changelogoptions = changelogOptions;
     }
 
      public bool ShouldLaunch(ChatState chat) => chat.EventsState.AppVersionNotification.IsEnabled;
     
     public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
     {   
-        var changelogsToNotify = _changelogs
+        var changelogsToNotify = _changelogoptions.Value.Changelogs
             .Where(c => c.Id > chat.EventsState.AppVersionNotification.LastNotifiedAppVersionId)
             .OrderByDescending(c => c.Id)
             .ToList();

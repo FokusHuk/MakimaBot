@@ -22,4 +22,20 @@ jobs:
     - name: get app version
       id: app-version
       run: |
-        echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/appversion.json)"
+        echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/application.config.json)"
+
+    - name: cr.yandex auth
+      run: echo '${{ secrets.REGISTRY_KEY }}' | docker login -u json_key --password-stdin cr.yandex
+
+    - name: check if image version exists
+      run: |
+        IMAGE_NAME="${{ env.registry }}/${{ env.image_name }}:${{ steps.app-version.outputs.APP_VERSION }}"
+        if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+          echo "Error: Image version $IMAGE_NAME already exists! Update application version."
+          exit 1
+        fi
+    
+    - name: build and run tests
+      run: |
+        docker build --target tests -t makima-tests .
+        docker run makima-tests

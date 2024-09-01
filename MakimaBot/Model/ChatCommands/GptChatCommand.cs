@@ -26,6 +26,7 @@ public class GptChatCommand : ChatCommand
             await _telegramBotClient.SendTextMessageAsync(
                 chatState.ChatId,
                 "Промт не может быть пустым.",
+                replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
         }
 
@@ -34,6 +35,7 @@ public class GptChatCommand : ChatCommand
         await _telegramBotClient.SendTextMessageAsync(
                 chatState.ChatId,
                 response.Result.Alternatives.First().Message.Text,
+                replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
     }
 }
