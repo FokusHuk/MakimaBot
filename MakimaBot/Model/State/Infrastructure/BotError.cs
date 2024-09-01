@@ -2,7 +2,7 @@
 
 namespace MakimaBot.Model;
 
-public class BotError
+public  class BotError
 {   
     [JsonPropertyName("message")]
     public required string Message { get; set; }

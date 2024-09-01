@@ -18,4 +18,7 @@ public class EventsState
 
     [JsonPropertyName("eveningMessageEventState")]
     public required EveningMessageEventState EveningMessage { get; set; }
+
+    [JsonPropertyName("newEventState")]
+    public required EveningMessageEventState NewEventState { get; set; }
 }

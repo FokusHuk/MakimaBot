@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public abstract class ScheduledMessageEventState
+public class ScheduledMessageEventState
 {
     [JsonPropertyName("isEnabled")]
     public required bool IsEnabled { get; set; }

@@ -1,5 +1,8 @@
 ﻿{
-  "telegramBotToken": "botToken",
+  "telegramConfig":
+  {
+    "token": "botToken"
+  },
   "bucketConfig":
   {
     "accessKeyId": "accessKeyId",

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace MakimaBot.Model;
 
-public class InfrastructureState
+public  class InfrastructureState
 {
     [JsonPropertyName("errors")]
     public required ICollection<BotError> Errors { get; set; }

@@ -4,7 +4,7 @@ using Amazon.S3.Model;
 
 namespace MakimaBot.Model;
 
-public class BucketClient
+public class BucketClient : IBucketClient
 {
     private readonly AmazonS3Client _client;
     private readonly string _bucketName;
@@ -17,20 +17,7 @@ public class BucketClient
         _stateFileName = stateFileName;
     }
 
-    public async Task<BotState?> TryLoadStateAsync()
-    {
-        try
-        {
-            return await LoadStateAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occured while loading state: {ex.Message}.");
-            return null;
-        }
-    }
-
-    public async Task<BotState> LoadStateAsync()
+    public async Task<string> LoadRawStateAsync()
     {
         var request = new GetObjectRequest
         {
@@ -42,7 +29,12 @@ public class BucketClient
         await using var responseStream = response.ResponseStream;
         using var reader = new StreamReader(responseStream);
 
-        var state = await reader.ReadToEndAsync();
+        return await reader.ReadToEndAsync();
+    }
+
+    public async Task<BotState> LoadStateAsync()
+    {
+        var state = await LoadRawStateAsync();
         return JsonSerializer.Deserialize<BotState>(state);
     }
 
