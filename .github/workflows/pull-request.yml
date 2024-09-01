@@ -23,3 +23,8 @@ jobs:
       id: app-version
       run: |
         echo "::set-output name=APP_VERSION::$(jq -r '.version' ./MakimaBot/application.config.json)"
+    
+    - name: build and run tests
+      run: |
+        docker build --target tests -t makima-tests .
+        docker run makima-tests
