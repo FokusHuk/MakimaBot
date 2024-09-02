@@ -77,11 +77,7 @@ public class ChatMessagesHandler
         if (update.Message is not { } message)
             return;
 
-        if (message.From != null)
-        {
-            var processorsChain = _processorsChainFactory.CreateChain();
-            
-            await processorsChain.ProcessChainAsync(message, message.Chat.Id, cancellationToken);
-        }
+        var processorsChain = _processorsChainFactory.CreateChain();
+        await processorsChain.ProcessChainAsync(message, message.Chat.Id, cancellationToken);
     }
 }

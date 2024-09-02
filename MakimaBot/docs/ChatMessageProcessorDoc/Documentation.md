@@ -95,20 +95,42 @@ ProcessorA
 .ProcessChainAsync()
 ```
 
-### Последовательность выполнения __ProcessChainAsync()__ если ProcessorA выполнится:
+### Приоритет __процессоров__:
 
 ᐯ \
 ├──&nbsp; __1__ ProcessorA \
-&nbsp;__|__&emsp;&emsp;├── __2__ ProcessorB \
-&nbsp;__|__&emsp;&emsp;├── __3__ ProcessorC \
-&nbsp;__|__&emsp;&emsp;└── __4__ ProcessorD \
+&nbsp;__|__&emsp;&emsp;├── __1.1__ ProcessorB \
+&nbsp;__|__&emsp;&emsp;├── __1.2__ ProcessorC \
+&nbsp;__|__&emsp;&emsp;└── __1.3__ ProcessorD \
 &nbsp;__|__ \
-└──&nbsp; __5__ ProcessorE
+└──&nbsp; __2__ ProcessorE
 
-### Последовательность выполнения __ProcessChainAsync()__ если ProcessorA __НЕ__ выполнится:
+
+### Если ProcessorA НЕ выполнится, то он передаст управление ProcessorE.
+
+#### Дочерняя цепочка ProcessorB ➞ ProcessorC ➞ ProcessorD будет проигнорирована!
 
 ᐯ \
-└──&nbsp; __5__ ProcessorE
+└──&nbsp; __2__ ProcessorE
 
+
+### Если ProcessorA выполнится, то ProcessorE не будет вызван.
+
+#### Далее ProcessorA передаст управление цепочке ProcessorB ➞ ProcessorC ➞ ProcessorD.
+
+ᐯ \
+└──&nbsp; __1__ ProcessorA &emsp;&emsp;&emsp;&emsp; ☑  \
+&nbsp;&nbsp;&emsp;&emsp;├── __1.1__ ProcessorB \
+&nbsp;&nbsp;&emsp;&emsp;├── __1.2__ ProcessorC \
+&nbsp;&nbsp;&emsp;&emsp;└── __1.3__ ProcessorD 
+
+### Предположим, что ProcessorB НЕ выполнился. Тогда он передаст управление в ProcessorC.
+
+#### Предположим, что ProcessorC выполнился. Тогда он завершит цепочку, игнорируя ProcessorD.
+
+ᐯ \
+└──&nbsp; __1__ ProcessorA &emsp;&emsp;&emsp;&emsp; ☑  \
+&nbsp;&nbsp;&emsp;&emsp;├── __1.1__ ProcessorB &emsp; ☒ \
+&nbsp;&nbsp;&emsp;&emsp;└──  __1.2__ ProcessorC &emsp; ☑
 
 
