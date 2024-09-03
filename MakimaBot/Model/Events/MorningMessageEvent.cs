@@ -9,7 +9,7 @@ public class MorningMessageEvent : ScheduledEventBase, IChatEvent
     
     public bool ShouldLaunch(ChatState chat) => ShouldLaunch(chat.EventsState.MorningMessage);
 
-    public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
     {
         await telegramBotClient.SendTextMessageAsync(
            chatId: chat.ChatId,

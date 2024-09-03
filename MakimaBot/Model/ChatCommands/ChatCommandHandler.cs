@@ -18,7 +18,7 @@ public class ChatCommandHandler
     public async Task HandleAsync(
         Message message,
         ChatState chatState,
-        TelegramBotClient _telegramBotClient,
+        ITelegramBotClient _telegramBotClient,
         CancellationToken cancellationToken)
     {
         var match = Regex.Matches(message.Text, CommandPattern, RegexOptions.IgnoreCase);

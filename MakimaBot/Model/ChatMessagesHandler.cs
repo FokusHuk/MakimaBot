@@ -6,13 +6,13 @@ namespace MakimaBot.Model;
 
 public class ChatMessagesHandler
 {
-    private readonly TelegramBotClient _telegramBotClient;
+    private readonly ITelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
     private readonly ProcessorsChainFactory _processorsChainFactory;
 
     private const int UpdateMessagesLimit = 25;
 
-    public ChatMessagesHandler(TelegramBotClient telegramBotClient,
+    public ChatMessagesHandler(ITelegramBotClient telegramBotClient,
                                DataContext dataContext, 
                                ProcessorsChainFactory processorsChainFactory)
     {

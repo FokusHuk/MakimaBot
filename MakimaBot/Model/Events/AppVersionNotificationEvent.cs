@@ -15,7 +15,7 @@ public class AppVersionNotificationEvent : IChatEvent
 
      public bool ShouldLaunch(ChatState chat) => chat.EventsState.AppVersionNotification.IsEnabled;
     
-    public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
     {   
         var changelogsToNotify = _changelogoptions.Value.Changelogs
             .Where(c => c.Id > chat.EventsState.AppVersionNotification.LastNotifiedAppVersionId)

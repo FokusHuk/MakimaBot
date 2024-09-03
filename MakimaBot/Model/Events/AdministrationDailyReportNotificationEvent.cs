@@ -6,14 +6,14 @@ namespace MakimaBot.Model.Events;
 
 public class AdministrationDailyReportNotificationEvent : IChatEvent
 {
-    private readonly TelegramBotClient _telegramBotClient;
+    private readonly ITelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
 
     private readonly TimeSpan notificationTimeStartUtc = new TimeSpan(hours: 18, minutes: 0, seconds: 0);
     private readonly TimeSpan notificationTimeEndUtc = new TimeSpan(hours: 18, minutes: 30, seconds: 0);
 
     public AdministrationDailyReportNotificationEvent(
-        TelegramBotClient telegramBotClient,
+        ITelegramBotClient telegramBotClient,
         DataContext dataContext)
     {
         _telegramBotClient = telegramBotClient;
@@ -30,7 +30,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < notificationTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
     {
         if (chat?.Name != "akima_yooukie")
             return;

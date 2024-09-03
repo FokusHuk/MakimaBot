@@ -6,10 +6,10 @@ namespace MakimaBot.Model.Processors;
 
 public class HealthCheackProcessor : ChatMessageProcessorBase
 {
-    private TelegramBotClient _telegramBotClient;
+    private ITelegramBotClient _telegramBotClient;
 
-    public HealthCheackProcessor(DataContext dataContext, 
-                                 TelegramBotClient telegramBotClient) 
+    public HealthCheackProcessor(DataContext dataContext,
+                                 ITelegramBotClient telegramBotClient) 
                                  : base(dataContext)
     {
         _telegramBotClient = telegramBotClient;

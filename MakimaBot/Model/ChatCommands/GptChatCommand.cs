@@ -18,7 +18,7 @@ public class GptChatCommand : ChatCommand
         Message message,
         ChatState chatState,
         string rawParameters,
-        TelegramBotClient _telegramBotClient,
+        ITelegramBotClient _telegramBotClient,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(rawParameters))

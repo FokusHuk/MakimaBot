@@ -21,7 +21,7 @@ public class ActivityStatisticsEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < statisticsTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
     {
         var membersStatistics = "";
         foreach (var stats in chat.EventsState.ActivityStatistics.Statistics)

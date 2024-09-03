@@ -7,14 +7,14 @@ namespace MakimaBot.Model;
 
 public class BotService : IBotService
 {
-    private readonly TelegramBotClient _telegramClient;
+    private readonly ITelegramBotClient _telegramClient;
     private readonly DataContext _dataContext;
     private readonly ChatEventsHandler _chatEventsHandler;
     private readonly ChatMessagesHandler _chatMessagesHandler;
     private readonly InfrastructureJobsHandler _infrastructureJobsHandler;
 
     public BotService(
-        TelegramBotClient telegramClient,
+        ITelegramBotClient telegramClient,
         DataContext dataContext,
         ChatEventsHandler chatEventsHandler,
         ChatMessagesHandler chatMessagesHandler,

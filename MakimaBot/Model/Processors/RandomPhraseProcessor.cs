@@ -5,10 +5,10 @@ namespace MakimaBot.Model.Processors;
 
 public class RandomPhraseProcessor : ChatMessageProcessorBase
 {
-    private TelegramBotClient _telegramBotClient;
+    private ITelegramBotClient _telegramBotClient;
 
-    public RandomPhraseProcessor(DataContext dataContext, 
-                                 TelegramBotClient telegramBotClient)
+    public RandomPhraseProcessor(DataContext dataContext,
+                                 ITelegramBotClient telegramBotClient)
                                  : base(dataContext)
     {
         _telegramBotClient = telegramBotClient;

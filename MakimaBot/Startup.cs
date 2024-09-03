@@ -72,7 +72,7 @@ public class Startup(IConfiguration configuration)
 
         services.AddSingleton<DataContext>();
 
-        services.AddSingleton<TelegramBotClient>(provider =>
+        services.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider =>
         {
             var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
             return new TelegramBotClient(telegramOptions.Token);

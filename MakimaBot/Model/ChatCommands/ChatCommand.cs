@@ -11,6 +11,6 @@ public abstract class ChatCommand
         Message message,
         ChatState chatState,
         string rawParameters,
-        TelegramBotClient _telegramBotClient,
+        ITelegramBotClient _telegramBotClient,
         CancellationToken cancellationToken);
 }

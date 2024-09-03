@@ -6,10 +6,10 @@ namespace MakimaBot.Model.Processors;
 
 public class UntrustedChatProcessor : ChatMessageProcessorBase
 {
-    private readonly TelegramBotClient _telegramBotClient;
+    private readonly ITelegramBotClient _telegramBotClient;
 
-    public UntrustedChatProcessor(DataContext dataContext, 
-                                  TelegramBotClient telegramBotClient) 
+    public UntrustedChatProcessor(DataContext dataContext,
+                                  ITelegramBotClient telegramBotClient) 
                                   : base(dataContext)
     {
         _telegramBotClient = telegramBotClient;
