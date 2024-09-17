@@ -4,15 +4,18 @@ namespace MakimaBot.Model.Events;
 
 public class ChatEventsHandler
 {
+    private readonly ITelegramTextMessageSender _telegramTextMessageSender;
     private readonly ITelegramBotClient _telegramBotClient;
     private readonly IEnumerable<IChatEvent> _chatEvents;
     private readonly DataContext _dataContext;
 
     public ChatEventsHandler(
+        ITelegramTextMessageSender telegramTextMessageSender,
         ITelegramBotClient telegramBotClient,
         IEnumerable<IChatEvent> chatEvents,
         DataContext dataContext)
     {
+        _telegramTextMessageSender = telegramTextMessageSender;
         _telegramBotClient = telegramBotClient;
         _chatEvents = chatEvents;
         _dataContext = dataContext;
@@ -69,7 +72,7 @@ public class ChatEventsHandler
             {
                 if (chatEvent.ShouldLaunch(chatState))
                 {
-                    await chatEvent.HandleEventAsync(_telegramBotClient, chatState);
+                    await chatEvent.HandleEventAsync(_telegramTextMessageSender, chatState);
                     await _dataContext.SaveChangesAsync();
                 }
             }

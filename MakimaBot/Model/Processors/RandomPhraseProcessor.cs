@@ -5,13 +5,13 @@ namespace MakimaBot.Model.Processors;
 
 public class RandomPhraseProcessor : ChatMessageProcessorBase
 {
-    private ITelegramBotClient _telegramBotClient;
+    private ITelegramTextMessageSender _telegramTextMessageSender;
 
     public RandomPhraseProcessor(DataContext dataContext,
-                                 ITelegramBotClient telegramBotClient)
+                                 ITelegramTextMessageSender telegramTextMessageSender)
                                  : base(dataContext)
     {
-        _telegramBotClient = telegramBotClient;
+        _telegramTextMessageSender = telegramTextMessageSender;
     }
 
     protected override  async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
@@ -29,9 +29,9 @@ public class RandomPhraseProcessor : ChatMessageProcessorBase
                 "До вечера 🌙"
             };
 
-        await _telegramBotClient.SendTextMessageAsync(
-            chatState.ChatId,
-            reactions[new Random().Next(reactions.Length)],
+        await _telegramTextMessageSender.SendTextMessageAsync(
+            chatId: chatState.ChatId,
+            text: reactions[new Random().Next(reactions.Length)],
             cancellationToken: cancellationToken);
     }
 

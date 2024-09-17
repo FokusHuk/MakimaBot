@@ -15,7 +15,7 @@ public class AppVersionNotificationEvent : IChatEvent
 
      public bool ShouldLaunch(ChatState chat) => chat.EventsState.AppVersionNotification.IsEnabled;
     
-    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramTextMessageSender telegramTextMessageSender, ChatState chat)
     {   
         var changelogsToNotify = _changelogoptions.Value.Changelogs
             .Where(c => c.Id > chat.EventsState.AppVersionNotification.LastNotifiedAppVersionId)
@@ -33,7 +33,7 @@ public class AppVersionNotificationEvent : IChatEvent
 
         var message = $"*Обновление Makima v{lastChangelog.Version}*\n{totalDescription}";
 
-        await telegramBotClient.SendTextMessageAsync(
+        await telegramTextMessageSender.SendTextMessageAsync(
                 chat.ChatId,
                 message,
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);

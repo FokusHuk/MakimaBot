@@ -6,20 +6,20 @@ namespace MakimaBot.Model.Processors;
 
 public class HealthCheackProcessor : ChatMessageProcessorBase
 {
-    private ITelegramBotClient _telegramBotClient;
+    private ITelegramTextMessageSender _telegramTextMessageSender;
 
     public HealthCheackProcessor(DataContext dataContext,
-                                 ITelegramBotClient telegramBotClient) 
+                                 ITelegramTextMessageSender telegramTextMessageSender) 
                                  : base(dataContext)
     {
-        _telegramBotClient = telegramBotClient;
+        _telegramTextMessageSender = telegramTextMessageSender;
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         if (message.Sticker.Emoji == "😤")
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramTextMessageSender.SendTextMessageAsync(
                 chatId: chatId,
                 text: "❤️",
                 replyToMessageId: message.MessageId,

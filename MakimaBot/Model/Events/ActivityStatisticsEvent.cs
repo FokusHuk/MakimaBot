@@ -5,11 +5,16 @@ namespace MakimaBot.Model.Events;
 
 public class ActivityStatisticsEvent : IChatEvent
 {
+    public ActivityStatisticsEvent(ITelegramBotClient telegramBotClient)
+    {
+        _telegramBotClient = telegramBotClient;
+    }
     private readonly TimeSpan statisticsTimeStartUtc =
         DateTime.Parse("2023-01-01 20:00:00", CultureInfo.InvariantCulture).TimeOfDay;
 
     private readonly TimeSpan statisticsTimeEndUtc =
         DateTime.Parse("2023-01-01 20:30:00", CultureInfo.InvariantCulture).TimeOfDay;
+    private readonly ITelegramBotClient _telegramBotClient;
 
     public bool ShouldLaunch(ChatState chat)
     {
@@ -21,12 +26,12 @@ public class ActivityStatisticsEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < statisticsTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramTextMessageSender telegramTextMessageSender, ChatState chat)
     {
         var membersStatistics = "";
         foreach (var stats in chat.EventsState.ActivityStatistics.Statistics)
         {
-            var member = await telegramBotClient.GetChatMemberAsync(chat.ChatId, stats.Key);
+            var member = await _telegramBotClient.GetChatMemberAsync(chat.ChatId, stats.Key);
             var memberName = member.User.Username ?? member.User.FirstName;
 
             membersStatistics += $"{memberName}: {stats.Value}\n";
@@ -34,7 +39,7 @@ public class ActivityStatisticsEvent : IChatEvent
 
         if (string.IsNullOrEmpty(membersStatistics))
         {
-            await telegramBotClient.SendTextMessageAsync(
+            await telegramTextMessageSender.SendTextMessageAsync(
                 chatId: chat.ChatId,
                 text: """
                 Сегодня правила не нарушали 🤤
@@ -42,7 +47,7 @@ public class ActivityStatisticsEvent : IChatEvent
         }
         else
         {
-            await telegramBotClient.SendTextMessageAsync(
+            await telegramTextMessageSender.SendTextMessageAsync(
                 chatId: chat.ChatId,
                 text: $"""
                 Подведем стастистику сами знаете чего 😌

@@ -18,39 +18,46 @@ public class ChatCommandHandler
     public async Task HandleAsync(
         Message message,
         ChatState chatState,
-        ITelegramBotClient _telegramBotClient,
+        ITelegramTextMessageSender _telegramTextMessageSender,
         CancellationToken cancellationToken)
     {
         var match = Regex.Matches(message.Text, CommandPattern, RegexOptions.IgnoreCase);
 
-        if (match.Count == 0)
+        var commandName = match.First().Groups[1].Value;
+        if (string.IsNullOrEmpty(commandName))
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
-                "Неизвестная команда", // todo: сообщить юзеру, что меншн это команда
+                "Неизвестная команда💔 @makima_daily_bot <команда> <параметры>", // todo: сообщить юзеру, что меншн это команда
                 replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
             return;
         }
 
-        var commandName = match.First().Groups[1].Value;
-
-        var allowedCommands = _commands.Select(command => command.Name).ToArray();
+        var allowedCommands = _commands.Select(command => command.Name).ToArray(); // todo: что? зачем сейчас? почему? Кажется тут чего-то не хватает, например премиссий💔
 
         var currentCommand = _commands.SingleOrDefault(command => command.Name == commandName);
-
-        if (currentCommand == null)
+        if (currentCommand is null)
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
-                "Команда не распознана, запросите список доступных команд (list)",
+                "Команда не распознана🙍‍♀️ запросите список доступных команд (list)",
                 replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
             return;
         }
 
         var rawParameters = match.First().Groups[2].Value;
+        if (string.IsNullOrEmpty(rawParameters))
+        {
+            await _telegramTextMessageSender.SendTextMessageAsync(
+                chatState.ChatId,
+                "Кажется вы забыли указать что хотели узнать🤦‍♀️ @makima_daily_bot <gpt> <promt>",
+                replyToMessageId: message.MessageId,
+                cancellationToken: cancellationToken);
+            return;
+        }
 
-        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClient, cancellationToken); 
+        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramTextMessageSender, cancellationToken); 
     }
 }

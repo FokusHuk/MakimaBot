@@ -6,17 +6,12 @@ namespace MakimaBot.Model.Events;
 
 public class AdministrationDailyReportNotificationEvent : IChatEvent
 {
-    private readonly ITelegramBotClient _telegramBotClient;
     private readonly DataContext _dataContext;
-
     private readonly TimeSpan notificationTimeStartUtc = new TimeSpan(hours: 18, minutes: 0, seconds: 0);
     private readonly TimeSpan notificationTimeEndUtc = new TimeSpan(hours: 18, minutes: 30, seconds: 0);
 
-    public AdministrationDailyReportNotificationEvent(
-        ITelegramBotClient telegramBotClient,
-        DataContext dataContext)
+    public AdministrationDailyReportNotificationEvent(DataContext dataContext)
     {
-        _telegramBotClient = telegramBotClient;
         _dataContext = dataContext;
     }
 
@@ -30,7 +25,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < notificationTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramTextMessageSender telegramTextMessageSender, ChatState chat)
     {
         if (chat?.Name != "akima_yooukie")
             return;
@@ -41,7 +36,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
 
         if (!string.IsNullOrWhiteSpace(errorsReport))
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await telegramTextMessageSender.SendTextMessageAsync(
                 chat.ChatId,
                 TrimTelegramMessage(errorsReport),
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -51,7 +46,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
 
         if (!string.IsNullOrWhiteSpace(unknownMessagesReport))
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await telegramTextMessageSender.SendTextMessageAsync(
                 chat.ChatId,
                 TrimTelegramMessage(unknownMessagesReport),
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -65,7 +60,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
             *Daily Makima bot report* 
             Поздравляю, таска не сдохла!!!! Просто сегодня не было ни новых рандомных типОв, ни ошибок.  
             """;
-            await _telegramBotClient.SendTextMessageAsync(
+            await telegramTextMessageSender.SendTextMessageAsync(
                 chat.ChatId,
                 message,
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MakimaBot.Model.Processors;
+using MakimaBot;
 
 public class Startup(IConfiguration configuration)
 {
@@ -77,7 +78,7 @@ public class Startup(IConfiguration configuration)
             var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
             return new TelegramBotClient(telegramOptions.Token);
         });
-
+        services.AddSingleton<ITelegramTextMessageSender, TelegramTextMessageSender>();
 
         services.AddSingleton<IChatEvent, MorningMessageEvent>();
         services.AddSingleton<IChatEvent, EveningMessageEvent>();

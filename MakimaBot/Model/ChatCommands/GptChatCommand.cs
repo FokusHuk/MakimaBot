@@ -18,12 +18,12 @@ public class GptChatCommand : ChatCommand
         Message message,
         ChatState chatState,
         string rawParameters,
-        ITelegramBotClient _telegramBotClient,
+        ITelegramTextMessageSender _telegramTextMessageSender,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(rawParameters))
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
                 "Промт не может быть пустым.",
                 replyToMessageId: message.MessageId,
@@ -32,7 +32,7 @@ public class GptChatCommand : ChatCommand
 
         var response = await _gptClient.SendAsync(rawParameters);
 
-        await _telegramBotClient.SendTextMessageAsync(
+        await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
                 response.Result.Alternatives.First().Message.Text,
                 replyToMessageId: message.MessageId,
