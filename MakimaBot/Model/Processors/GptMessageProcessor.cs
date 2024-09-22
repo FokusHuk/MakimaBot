@@ -9,7 +9,7 @@ public class GptMessageProcessor : ChatMessageProcessorBase
     private ChatCommandHandler _commandHandler;
     private ITelegramTextMessageSender _telegramTextMessageSender;
     
-    public GptMessageProcessor(DataContext dataContext, 
+    public GptMessageProcessor(IDataContext dataContext, 
                                ChatCommandHandler commandHandler,
                                ITelegramTextMessageSender telegramTextMessageSender)
                                : base(dataContext)

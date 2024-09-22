@@ -6,12 +6,12 @@ namespace MakimaBot.Model;
 public class BotController : ControllerBase
 {
     private readonly IBotService _botService;
-    private readonly DataContext _dataContext;
+    private readonly IDataContext _dataContext;
     private readonly BotStateUpdater _stateUpdater;
 
     public BotController(
         IBotService botService,
-        DataContext dataContext,
+        IDataContext dataContext,
         BotStateUpdater stateUpdater)
     {
         _botService = botService;
@@ -39,12 +39,12 @@ public class BotController : ControllerBase
         });
     }
 
-    [HttpGet]
-    [Route("state")]
-    public async Task<IActionResult> GetStateAsync(CancellationToken cancellationToken)
-    {
-        await _dataContext.ConfigureAsync();
+    // [HttpGet]
+    // [Route("state")]
+    // public async Task<IActionResult> GetStateAsync(CancellationToken cancellationToken)
+    // {
+    //     await _dataContext.ConfigureAsync();
 
-        return new JsonResult(_dataContext.State);
-    }
+    //     return new JsonResult(_dataContext.State);
+    // }
 }

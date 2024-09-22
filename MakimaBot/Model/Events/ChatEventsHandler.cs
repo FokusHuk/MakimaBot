@@ -7,13 +7,13 @@ public class ChatEventsHandler
     private readonly ITelegramTextMessageSender _telegramTextMessageSender;
     private readonly ITelegramBotClient _telegramBotClient;
     private readonly IEnumerable<IChatEvent> _chatEvents;
-    private readonly DataContext _dataContext;
+    private readonly IDataContext _dataContext;
 
     public ChatEventsHandler(
         ITelegramTextMessageSender telegramTextMessageSender,
         ITelegramBotClient telegramBotClient,
         IEnumerable<IChatEvent> chatEvents,
-        DataContext dataContext)
+        IDataContext dataContext)
     {
         _telegramTextMessageSender = telegramTextMessageSender;
         _telegramBotClient = telegramBotClient;

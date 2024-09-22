@@ -7,14 +7,14 @@ public class RandomPhraseProcessor : ChatMessageProcessorBase
 {
     private ITelegramTextMessageSender _telegramTextMessageSender;
 
-    public RandomPhraseProcessor(DataContext dataContext,
+    public RandomPhraseProcessor(IDataContext dataContext,
                                  ITelegramTextMessageSender telegramTextMessageSender)
                                  : base(dataContext)
     {
         _telegramTextMessageSender = telegramTextMessageSender;
     }
 
-    protected override  async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         var chatState = _dataContext.GetChatStateById(chatId);
         

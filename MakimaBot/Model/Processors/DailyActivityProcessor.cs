@@ -6,9 +6,9 @@ public class DailyActivityProcessor : ChatMessageProcessorBase
 {
     protected override bool СontinueAnyway => true;
 
-    public DailyActivityProcessor(DataContext dataContext) : base(dataContext)
+    public DailyActivityProcessor(IDataContext dataContext) : base(dataContext)
     {
-
+        
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)

@@ -71,7 +71,7 @@ public class Startup(IConfiguration configuration)
                 bucketOptions.StateFileName);
         });
 
-        services.AddSingleton<DataContext>();
+        services.AddSingleton<IDataContext, DataContext>();
 
         services.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider =>
         {

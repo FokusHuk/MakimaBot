@@ -4,7 +4,7 @@ namespace MakimaBot.Model.Processors;
 
 public class UntrustedChatProcessor : ChatMessageProcessorBase
 {
-    public UntrustedChatProcessor(DataContext dataContext) : base(dataContext)
+    public UntrustedChatProcessor(IDataContext dataContext) : base(dataContext)
     {
     }
 

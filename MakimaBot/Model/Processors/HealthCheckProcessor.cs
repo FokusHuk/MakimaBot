@@ -8,7 +8,7 @@ public class HealthCheackProcessor : ChatMessageProcessorBase
 {
     private ITelegramTextMessageSender _telegramTextMessageSender;
 
-    public HealthCheackProcessor(DataContext dataContext,
+    public HealthCheackProcessor(IDataContext dataContext,
                                  ITelegramTextMessageSender telegramTextMessageSender) 
                                  : base(dataContext)
     {

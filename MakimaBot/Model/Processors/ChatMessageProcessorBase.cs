@@ -8,9 +8,9 @@ public abstract class ChatMessageProcessorBase
     private ChatMessageProcessorBase _processor;
     private ChatMessageProcessorBase _childProcessor;
 
-    protected readonly DataContext _dataContext;
+    protected readonly IDataContext _dataContext;
 
-    protected ChatMessageProcessorBase(DataContext dataContext)
+    protected ChatMessageProcessorBase(IDataContext dataContext)
     {
         _dataContext = dataContext;
     }

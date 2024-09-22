@@ -6,11 +6,11 @@ namespace MakimaBot.Model.Events;
 
 public class AdministrationDailyReportNotificationEvent : IChatEvent
 {
-    private readonly DataContext _dataContext;
+    private readonly IDataContext _dataContext;
     private readonly TimeSpan notificationTimeStartUtc = new TimeSpan(hours: 18, minutes: 0, seconds: 0);
     private readonly TimeSpan notificationTimeEndUtc = new TimeSpan(hours: 18, minutes: 30, seconds: 0);
 
-    public AdministrationDailyReportNotificationEvent(DataContext dataContext)
+    public AdministrationDailyReportNotificationEvent(IDataContext dataContext)
     {
         _dataContext = dataContext;
     }
