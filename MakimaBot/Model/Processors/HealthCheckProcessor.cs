@@ -1,5 +1,3 @@
-using MakimaBot.Model;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;

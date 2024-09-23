@@ -17,7 +17,7 @@ public class ProcessorComponent
         UntrustedChatProcessor = untrustedChatProcessor;
     }
 
-    public DailyActivityProcessor DailyActivityProcessor {get; }
+    public DailyActivityProcessor DailyActivityProcessor { get; }
     public GptMessageProcessor GptMessageProcessor { get; }
     public HealthCheackProcessor HealthCheackProcessor { get; }
     public RandomPhraseProcessor RandomPhraseProcessor { get; }
