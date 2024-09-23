@@ -99,7 +99,7 @@ public class Startup(IConfiguration configuration)
 
         services.AddHttpClient();
 
-        services.AddSingleton<ChatCommandHandler>();
+        services.AddSingleton<IChatCommandHandler, ChatCommandHandler>();
         services.AddSingleton<ChatCommand, GptChatCommand>();
         services.AddSingleton<IGptClient, GptClient>();
 

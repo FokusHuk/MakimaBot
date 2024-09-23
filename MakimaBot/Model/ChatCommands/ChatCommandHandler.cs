@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace MakimaBot.Model;
 
-public class ChatCommandHandler
+public class ChatCommandHandler : IChatCommandHandler
 {
     private readonly IEnumerable<ChatCommand> _commands;
 

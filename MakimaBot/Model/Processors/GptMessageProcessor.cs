@@ -6,11 +6,11 @@ namespace MakimaBot.Model.Processors;
 
 public class GptMessageProcessor : ChatMessageProcessorBase
 {
-    private ChatCommandHandler _commandHandler;
+    private IChatCommandHandler _commandHandler;
     private ITelegramTextMessageSender _telegramTextMessageSender;
     
     public GptMessageProcessor(IDataContext dataContext, 
-                               ChatCommandHandler commandHandler,
+                               IChatCommandHandler commandHandler,
                                ITelegramTextMessageSender telegramTextMessageSender)
                                : base(dataContext)
     {
