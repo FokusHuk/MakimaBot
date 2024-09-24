@@ -50,7 +50,7 @@ public class UntrustedChatProcessorTests
     }
 
     [TestMethod]
-    public async Task UserSendMessageIn_TrustedChat_DoNothing()
+    public async Task ReceiveMessageIn_TrustedChat_DoNothing()
     {
         var message = new Message()
             .AddText("test")
@@ -69,7 +69,7 @@ public class UntrustedChatProcessorTests
     }
 
     [TestMethod]
-    public async Task UserSendMessageIn_UntrustedChat_AddNewUnknownMesssageAndSaveChanges()
+    public async Task ReceiveMessageIn_UntrustedChat_AddNewUnknownMesssageAndSaveChanges()
     {
         var notExistedChatId = _existingTestChatId + 1;
         var message = new Message()

@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using MakimaBot.Model;
 using MakimaBot.Model.Processors;
 using Moq;

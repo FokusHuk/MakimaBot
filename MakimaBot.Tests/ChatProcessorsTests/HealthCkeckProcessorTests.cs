@@ -18,7 +18,7 @@ public class HealthCkeckProcessorTests
     }
 
     [TestMethod]
-    public async Task CheckHealthWithSticker_RightSticker_SendHeartrBack()
+    public async Task ReceiveSticker_RightSticker_SendHeartrBack()
     {
         var message = new Message().AddSticker(setName: "makimapak", emoji: "😤");
         var healthCheckProcessor = new HealthCheackProcessor(dataContext: null, _telegramTextMessageSender);
@@ -31,7 +31,7 @@ public class HealthCkeckProcessorTests
     }
 
     [TestMethod]
-    public async Task CheckHealthWithSticker_WrongStickerSetName_DoNothing()
+    public async Task ReceiveSticker_WrongStickerSetName_DoNothing()
     {
         var message = new Message().AddSticker(setName: "randomName", emoji: "😤");
         var healthCheckProcessor = new HealthCheackProcessor(dataContext: null, _telegramTextMessageSender);
@@ -42,7 +42,7 @@ public class HealthCkeckProcessorTests
     }
 
     [TestMethod]
-    public async Task CheckHealthWithSticker_WrongSticker_DoNothing()
+    public async Task ReceiveSticker_WrongSticker_DoNothing()
     {
         var message = new Message().AddSticker(setName: "makimapak", emoji: "❤️");
         var healthCheckProcessor = new HealthCheackProcessor(dataContext: null, _telegramTextMessageSender);

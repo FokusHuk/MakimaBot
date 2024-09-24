@@ -7,11 +7,11 @@ namespace MakimaBot.Tests;
 public class ChatMessageProcessorBaseTests
 {
     [TestMethod]
-    public async Task ChainedWith_FirstToSecond_OnlyFirstProcessorExecuted()
+    public async Task ProcessChainAsync_FirstChainedWithSecond_OnlyFirstProcessorExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, false);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, false);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
 
         firstProcessor.ChainedWith(secondProcessor);
 
@@ -21,11 +21,11 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task SubchaindeWith_FirstToSecond_BothExecuted()
+    public async Task ProcessChainAsync_FirstSubchaindeWithSecond_BothExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, false);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, false);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
 
         firstProcessor.SubchainedWith(secondProcessor);
 
@@ -35,11 +35,11 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task EndChainWith_FirstToSecond_OnlyFirstProcessorExecuted()
+    public async Task ProcessChainAsync_FirstEndChainWithSecond_OnlyFirstProcessorExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, false);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, false);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
 
         await firstProcessor
                 .EndChainWith(secondProcessor)
@@ -49,12 +49,12 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task ComplexChain_FirstSubSecondToThird_FirstAndSecondProcessorsExecuted()
+    public async Task ProcessChainAsync_ComplexChainBaseBehaviour_FirstAndSecondProcessorsExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, false);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
-        var thirdProcessor = new TestSomeChatMessageProcessor(3, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, false);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
+        var thirdProcessor = new TestAbstractChatMessageProcessor(3, executionQueue, false);
 
         await firstProcessor
                 .SubchainedWith(secondProcessor)
@@ -65,13 +65,13 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task ComplexChain_FirstSubSecondAndThirdToFourth_FirstAndSecondProcessorsExecuted()
+    public async Task ProcessChainAsync_ComplexChainSubProcessorBehaviour_FirstAndSecondProcessorsExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, false);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
-        var thirdProcessor = new TestSomeChatMessageProcessor(3, executionQueue, false);
-        var fourthProcessor = new TestSomeChatMessageProcessor(4, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, false);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
+        var thirdProcessor = new TestAbstractChatMessageProcessor(3, executionQueue, false);
+        var fourthProcessor = new TestAbstractChatMessageProcessor(4, executionQueue, false);
 
         await firstProcessor
                 .SubchainedWith(secondProcessor
@@ -83,11 +83,11 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task ContinuedAnywayChainedWith_FirstToSecond_BothExecuted()
+    public async Task ProcessChainAsync_BaseContinuedAnywayBehaviour_BothExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, true);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, true);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
 
         firstProcessor.ChainedWith(secondProcessor);
 
@@ -97,12 +97,12 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task ComplexChainWithContinuedAnyway_FirstSubSecondToThird_FirstAndSecondProcessorsExecuted()
+    public async Task ProcessChainAsync_ComplexChainContinuedAnywayBehaviour_FirstAndSecondProcessorsExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, true);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, false);
-        var thirdProcessor = new TestSomeChatMessageProcessor(3, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, true);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, false);
+        var thirdProcessor = new TestAbstractChatMessageProcessor(3, executionQueue, false);
 
         await firstProcessor
                 .SubchainedWith(secondProcessor)
@@ -113,13 +113,13 @@ public class ChatMessageProcessorBaseTests
     }
 
     [TestMethod]
-    public async Task ComplexChainWithChildContinuedAnyway_FirstSubSecondAndThirdToFourth_FirstToThirdProcessorsExecuted()
+    public async Task ProcessChainAsync_ComplexSubChainContinuedAnywayBehaviour_FirstToThirdProcessorsExecuted()
     {
         var executionQueue = new List<int>();
-        var firstProcessor = new TestSomeChatMessageProcessor(1, executionQueue, false);
-        var secondProcessor = new TestSomeChatMessageProcessor(2, executionQueue, true);
-        var thirdProcessor = new TestSomeChatMessageProcessor(3, executionQueue, false);
-        var fourthProcessor = new TestSomeChatMessageProcessor(4, executionQueue, false);
+        var firstProcessor = new TestAbstractChatMessageProcessor(1, executionQueue, false);
+        var secondProcessor = new TestAbstractChatMessageProcessor(2, executionQueue, true);
+        var thirdProcessor = new TestAbstractChatMessageProcessor(3, executionQueue, false);
+        var fourthProcessor = new TestAbstractChatMessageProcessor(4, executionQueue, false);
 
         await firstProcessor
                 .SubchainedWith(secondProcessor
@@ -131,12 +131,12 @@ public class ChatMessageProcessorBaseTests
     }
 }
 
-public class TestSomeChatMessageProcessor : ChatMessageProcessorBase
+public class TestAbstractChatMessageProcessor : ChatMessageProcessorBase
 {
     private readonly bool _continueAnyway;
     public List<int> ExecutionQueue { get; set; }
     public int ProcessorId { get; set; }
-    public TestSomeChatMessageProcessor(int id, List<int> executionQueue, bool continueAnyway) : base(null)
+    public TestAbstractChatMessageProcessor(int id, List<int> executionQueue, bool continueAnyway) : base(null)
     {
         ProcessorId = id;
         ExecutionQueue = executionQueue;

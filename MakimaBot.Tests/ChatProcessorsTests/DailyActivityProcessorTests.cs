@@ -10,8 +10,8 @@ public class DailyActivityProcessorTests
 {
     private static long _testChatId = 1;
     private static string _testChatName = "TestChat";
-    private static int _testUserId = 123456;
-    private static int _testUserMessagesCount = 5;
+    private static long _existedUserId = 123456;
+    private static int _existedUserMessagesCount = 5;
 
     private CancellationToken _cancellationToken;
     private ChatState _testChatState;
@@ -32,7 +32,7 @@ public class DailyActivityProcessorTests
                     LastTimeStampUtc = DateTime.UtcNow,
                     Statistics = new()
                     {
-                        { _testUserId, _testUserMessagesCount }
+                        { _existedUserId, _existedUserMessagesCount }
                     }
                 })
                 .Build())
@@ -54,27 +54,27 @@ public class DailyActivityProcessorTests
     }
 
     [TestMethod]
-    public async Task UserSendMessage_TestUser_AddMessageToStatistics()
+    public async Task ProcessorReceiveMessage_ExistedUser_AddMessageToStatistics()
     {
         var dailyActivityProcessor = new DailyActivityProcessor(_dataContext.Object);
         var message = new Message()
             .AddText("test message")
-            .AddSender(_testUserId);
-        var expectedTestUserMessagesCount = _testUserMessagesCount + 1;
+            .AddSender(_existedUserId);
+        var expectedTestUserMessagesCount = _existedUserMessagesCount + 1;
 
         await dailyActivityProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
 
-        var actualTestUserMessagesCount = _testChatState.EventsState.ActivityStatistics.Statistics[_testUserId];
+        var actualTestUserMessagesCount = _testChatState.EventsState.ActivityStatistics.Statistics[_existedUserId];
         _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Exactly(2));
         _dataContext.Verify(x => x.SaveChangesAsync(), Times.Once());
         Assert.AreEqual(expectedTestUserMessagesCount, actualTestUserMessagesCount);
     }
 
     [TestMethod]
-    public async Task UserSendMessage_UnknownUser_CreateNewStatisticWithValueOne()
+    public async Task ProcessorReceiveMessage_UnknownUser_CreateNewStatisticWithValueOne()
     {
         var dailyActivityProcessor = new DailyActivityProcessor(_dataContext.Object);
-        var newUser = _testUserId + 1;
+        var newUser = _existedUserId + 1;
         var message = new Message()
             .AddText("test message")
             .AddSender(newUser);
@@ -89,13 +89,13 @@ public class DailyActivityProcessorTests
     }
 
     [TestMethod]
-    public async Task DailyActivityDisabled_DoNothing()
+    public async Task ProcessorReceiveMessage_DailyActivityDisabled_DoNothing()
     {
         _testChatState.EventsState.ActivityStatistics.IsEnabled = false;
         var dailyActivityProcessor = new DailyActivityProcessor(_dataContext.Object);
         var message = new Message()
             .AddText("test message")
-            .AddSender(_testUserId);
+            .AddSender(_existedUserId);
 
         await dailyActivityProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
 

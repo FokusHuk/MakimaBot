@@ -23,6 +23,6 @@ public class TestTelegramTextMessageSender : ITelegramTextMessageSender
     {
         MessageSent = new Message();
         MessageSent.Text = text;
-        return Task<Message>.Run(() => MessageSent);
+        return Task.Run(() => MessageSent);
     }
 }

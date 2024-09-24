@@ -13,7 +13,7 @@ public static class TelegramMessageExtension
         return message;
     }
 
-    public static Message AddSender(this Message message, int userId)
+    public static Message AddSender(this Message message, long userId)
     {
         message.From = new User{
             Id = userId

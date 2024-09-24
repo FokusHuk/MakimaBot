@@ -8,8 +8,7 @@ namespace MakimaBot.Tests;
 [TestClass]
 public class RandomPhraseProcessorTests
 {
-    private static long _chatId = 1;
-    
+    private  long _chatId = 1;
     private TestTelegramTextMessageSender _telegramTextMessageSender;
     private Mock<IDataContext> _dataContext;
     private CancellationToken _cancellationToken;
@@ -20,22 +19,24 @@ public class RandomPhraseProcessorTests
         _cancellationToken = new CancellationToken();
         _telegramTextMessageSender = new TestTelegramTextMessageSender();
 
+        var testChatState = new TestChatStateBuilder()
+            .WithId(_chatId)
+            .WithName("TestChat")
+            .Build();
+
         var state = new TestBotStateBuilder()
-            .WithChat(new TestChatStateBuilder()
-                .WithId(_chatId)
-                .WithName("TestChat")
-                .Build())
+            .WithChat(testChatState)
             .Build();
 
         _dataContext = new Mock<IDataContext>();
         _dataContext
             .Setup(x => x.GetChatStateById(_chatId))
-            .Returns(state.Chats.SingleOrDefault(x => x.ChatId == _chatId))
+            .Returns(testChatState)
             .Verifiable();
     }
 
     [TestMethod]
-    public async Task UserSendMessageIn_TrustedChat_SendRandomPhraseBack()
+    public async Task ReceiveMessageIn_TrustedChat_SendRandomPhraseBack()
     {      
         var randomPhraseProcessor = new RandomPhraseProcessorWithoutRandom(_dataContext.Object, _telegramTextMessageSender);
      
