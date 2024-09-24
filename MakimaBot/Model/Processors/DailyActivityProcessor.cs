@@ -4,7 +4,7 @@ namespace MakimaBot.Model.Processors;
 
 public class DailyActivityProcessor : ChatMessageProcessorBase
 {
-    protected override bool СontinueAnyway => true;
+    public override bool СontinueAnyway => true;
 
     public DailyActivityProcessor(IDataContext dataContext) : base(dataContext)
     {

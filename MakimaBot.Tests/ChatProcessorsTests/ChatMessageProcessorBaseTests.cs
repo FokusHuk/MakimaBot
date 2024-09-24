@@ -142,7 +142,7 @@ public class TestSomeChatMessageProcessor : ChatMessageProcessorBase
         ExecutionQueue = executionQueue;
         _continueAnyway = continueAnyway;
     }
-    protected override bool СontinueAnyway => _continueAnyway;
+    public override bool СontinueAnyway => _continueAnyway;
 
     protected override Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
