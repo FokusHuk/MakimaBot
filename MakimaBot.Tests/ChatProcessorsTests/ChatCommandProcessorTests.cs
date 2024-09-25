@@ -6,23 +6,18 @@ using Telegram.Bot.Types;
 namespace MakimaBot.Tests;
 
 [TestClass]
-public class GptMessageProcessorTests
+public class ChatCommandProcessorTests
 {
-    private static long _testChatId = 1;
-    private static string _testChatName = "TestChat";
-
+    private const long ExistedChatId = 1;
     private Mock<IDataContext> _dataContext;
     private Mock<IChatCommandHandler> _chatCommandHandler;
-    private CancellationToken _cancellationToken;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _cancellationToken = new CancellationToken();
-
         var testChatState = new TestChatStateBuilder()
-                            .WithId(_testChatId)
-                            .WithName(_testChatName)
+                            .WithId(ExistedChatId)
+                            .WithName("TestChat")
                             .Build();
 
         var state = new TestBotStateBuilder()
@@ -31,7 +26,7 @@ public class GptMessageProcessorTests
 
         _dataContext = new Mock<IDataContext>();
         _dataContext
-            .Setup(x => x.GetChatStateById(_testChatId))
+            .Setup(x => x.GetChatStateById(ExistedChatId))
             .Returns(testChatState)
             .Verifiable();
 
@@ -47,14 +42,14 @@ public class GptMessageProcessorTests
     }
 
     [TestMethod]
-    public async Task ReceiveMessageWith_RightRequest_SendRequestToApi()
+    public async Task ProcessChainAsync_RightRequest_SendRequestToApi()
     {
-        var message = new Message().AddText("@makima_daily_bot  gpt random   Promt  ");
-        var gptMessageProcessor = new GptMessageProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
+        var message = new Message().WithText("@makima_daily_bot  gpt random   Promt  ");
+        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
 
-        await gptMessageProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
+        await gptMessageProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
-        _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Once());
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Once());
         _chatCommandHandler.Verify(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),
@@ -64,14 +59,14 @@ public class GptMessageProcessorTests
     }
 
     [TestMethod]
-    public async Task ReceiveMessageWith_WrongBotName_DoNothing()
+    public async Task ProcessChainAsync_WrongBotName_DoNothing()
     {
-        var message = new Message().AddText("@makiNO_daily_boD  gpt random   Promt  ");
-        var gptMessageProcessor = new GptMessageProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
+        var message = new Message().WithText("@makiNO_daily_boD  gpt random   Promt  ");
+        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
 
-        await gptMessageProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
+        await gptMessageProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
-        _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Never());
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Never());
         _chatCommandHandler.Verify(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),
@@ -81,14 +76,14 @@ public class GptMessageProcessorTests
     }
 
     [TestMethod]
-    public async Task ReceiveMessageWhich_StartsWithoutBotName_DoNothing()
+    public async Task ProcessChainAsync_MessageStartsWithoutBotName_DoNothing()
     {
-        var message = new Message().AddText("Makima @makima_daily_bot gpt random   Promt  ");
-        var gptMessageProcessor = new GptMessageProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
+        var message = new Message().WithText("Makima @makima_daily_bot gpt random   Promt  ");
+        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
 
-        await gptMessageProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
+        await gptMessageProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
-        _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Never());
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Never());
         _chatCommandHandler.Verify(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),

@@ -8,19 +8,17 @@ namespace MakimaBot.Tests;
 [TestClass]
 public class RandomPhraseProcessorTests
 {
-    private  long _chatId = 1;
+    private const long ExistedChatId = 1;
     private TestTelegramTextMessageSender _telegramTextMessageSender;
     private Mock<IDataContext> _dataContext;
-    private CancellationToken _cancellationToken;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _cancellationToken = new CancellationToken();
         _telegramTextMessageSender = new TestTelegramTextMessageSender();
 
         var testChatState = new TestChatStateBuilder()
-            .WithId(_chatId)
+            .WithId(ExistedChatId)
             .WithName("TestChat")
             .Build();
 
@@ -30,25 +28,25 @@ public class RandomPhraseProcessorTests
 
         _dataContext = new Mock<IDataContext>();
         _dataContext
-            .Setup(x => x.GetChatStateById(_chatId))
+            .Setup(x => x.GetChatStateById(ExistedChatId))
             .Returns(testChatState)
             .Verifiable();
     }
 
     [TestMethod]
-    public async Task ReceiveMessageIn_TrustedChat_SendRandomPhraseBack()
+    public async Task ProcessChainAsync_MessageInTrustedChat_SendRandomPhraseBack()
     {      
         var randomPhraseProcessor = new RandomPhraseProcessorWithoutRandom(_dataContext.Object, _telegramTextMessageSender);
      
-        await randomPhraseProcessor.ProcessChainAsync(message: null, _chatId, _cancellationToken);
+        await randomPhraseProcessor.ProcessChainAsync(message: null, ExistedChatId, CancellationToken.None);
 
-        _dataContext.Verify(x => x.GetChatStateById(_chatId), Times.Once());
-        Assert.IsTrue(_telegramTextMessageSender.MessageSent is not null);
-        Assert.IsTrue(!string.IsNullOrEmpty(_telegramTextMessageSender.MessageSent.Text));
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Once());
+        Assert.IsTrue(_telegramTextMessageSender.SentMessage is not null);
+        Assert.IsTrue(!string.IsNullOrEmpty(_telegramTextMessageSender.SentMessage.Text));
     }
 }
 
-public class RandomPhraseProcessorWithoutRandom : RandomPhraseProcessor
+file class RandomPhraseProcessorWithoutRandom : RandomPhraseProcessor
 {
     public RandomPhraseProcessorWithoutRandom(IDataContext dataContext, 
                                               ITelegramTextMessageSender telegramTextMessageSender) 

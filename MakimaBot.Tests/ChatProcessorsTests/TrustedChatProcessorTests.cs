@@ -7,48 +7,43 @@ namespace MakimaBot.Tests;
 [TestClass]
 public class TrustedChatProcessorTests
 {
-    private CancellationToken _cancellationToken;
+    private const long ExistedChatId = 1234;
     private Mock<IDataContext> _dataContext;
-    private long _existedChatId = 1234;
 
     [TestInitialize]
     public void TestInitialize()
-    {
-        _cancellationToken = new CancellationToken();
-        
+    {       
         _dataContext = new Mock<IDataContext>();
         _dataContext
-            .Setup(x => x.IsChatExists(_existedChatId))
+            .Setup(x => x.IsChatExists(ExistedChatId))
             .Returns(true)
             .Verifiable();
 
         _dataContext
-            .Setup(x => x.IsChatExists(It.IsNotIn(_existedChatId)))
+            .Setup(x => x.IsChatExists(It.IsNotIn(ExistedChatId)))
             .Returns(false)
             .Verifiable();
     }
 
     [TestMethod]
-    public async Task ReceiveMessageIn_TrustedChat_Process()
+    public async Task ProcessChainAsync_MessageInTrustedChat_Process()
     {
         var trustedChatProcessor = new TrustedChatProcessor(_dataContext.Object);
 
-        await trustedChatProcessor.ProcessChainAsync(message: null, _existedChatId, _cancellationToken);
+        await trustedChatProcessor.ProcessChainAsync(message: null, ExistedChatId, CancellationToken.None);
 
-        //Maybe will be some logic in ProcessAsync later
-        _dataContext.Verify(x => x.IsChatExists(_existedChatId), Times.Once());
-        _dataContext.Verify(x => x.IsChatExists(It.IsNotIn(_existedChatId)), Times.Never());
+        _dataContext.Verify(x => x.IsChatExists(ExistedChatId), Times.Once());
+        _dataContext.Verify(x => x.IsChatExists(It.IsNotIn(ExistedChatId)), Times.Never());
     } 
 
     [TestMethod]
-    public async Task ReceiveMessageIn_UntrustedChat_DoNothing()
+    public async Task ProcessChainAsync_MessageInUntrustedChat_DoNothing()
     {
         var trustedChatProcessor = new TrustedChatProcessor(_dataContext.Object);
 
-        await trustedChatProcessor.ProcessChainAsync(message: null, _existedChatId + 1, _cancellationToken);
+        await trustedChatProcessor.ProcessChainAsync(message: null, ExistedChatId + 1, CancellationToken.None);
 
-        //Maybe will be some logic in ProcessAsync later
-        _dataContext.Verify(x => x.IsChatExists(_existedChatId), Times.Never());
-        _dataContext.Verify(x => x.IsChatExists(It.IsNotIn(_existedChatId)), Times.Once());
+        _dataContext.Verify(x => x.IsChatExists(ExistedChatId), Times.Never());
+        _dataContext.Verify(x => x.IsChatExists(It.IsNotIn(ExistedChatId)), Times.Once());
     } 
 }

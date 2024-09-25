@@ -8,23 +8,19 @@ namespace MakimaBot.Tests;
 [TestClass]
 public class DailyActivityProcessorTests
 {
-    private static long _testChatId = 1;
-    private static string _testChatName = "TestChat";
-    private static long _existedUserId = 123456;
-    private static int _existedUserMessagesCount = 5;
+    private const long ExistedChatId = 1;
+    private const long ExistedUserId = 123456;
+    private const int ExistedUserMessagesCount = 5;
 
-    private CancellationToken _cancellationToken;
     private ChatState _testChatState;
     private Mock<IDataContext> _dataContext;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _cancellationToken = new CancellationToken();
-
         _testChatState = new TestChatStateBuilder()
-            .WithId(_testChatId)
-            .WithName(_testChatName)
+            .WithId(ExistedChatId)
+            .WithName("TestChat")
             .WithEventState(new TestEventsStateBuilder()
                 .WithActivityStatisticsEventState(new()
                 {
@@ -32,7 +28,7 @@ public class DailyActivityProcessorTests
                     LastTimeStampUtc = DateTime.UtcNow,
                     Statistics = new()
                     {
-                        { _existedUserId, _existedUserMessagesCount }
+                        { ExistedUserId, ExistedUserMessagesCount }
                     }
                 })
                 .Build())
@@ -44,7 +40,7 @@ public class DailyActivityProcessorTests
 
         _dataContext = new Mock<IDataContext>();
         _dataContext
-            .Setup(x => x.GetChatStateById(_testChatId))
+            .Setup(x => x.GetChatStateById(ExistedChatId))
             .Returns(_testChatState)
             .Verifiable();
 
@@ -54,52 +50,52 @@ public class DailyActivityProcessorTests
     }
 
     [TestMethod]
-    public async Task ProcessorReceiveMessage_ExistedUser_AddMessageToStatistics()
+    public async Task ProcessChainAsync_ExistedUser_AddMessageToStatistics()
     {
         var dailyActivityProcessor = new DailyActivityProcessor(_dataContext.Object);
         var message = new Message()
-            .AddText("test message")
-            .AddSender(_existedUserId);
-        var expectedTestUserMessagesCount = _existedUserMessagesCount + 1;
+            .WithText("test message")
+            .WithSender(ExistedUserId);
+        var expectedTestUserMessagesCount = ExistedUserMessagesCount + 1;
 
-        await dailyActivityProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
+        await dailyActivityProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
-        var actualTestUserMessagesCount = _testChatState.EventsState.ActivityStatistics.Statistics[_existedUserId];
-        _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Exactly(2));
+        var actualTestUserMessagesCount = _testChatState.EventsState.ActivityStatistics.Statistics[ExistedUserId];
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Exactly(2));
         _dataContext.Verify(x => x.SaveChangesAsync(), Times.Once());
         Assert.AreEqual(expectedTestUserMessagesCount, actualTestUserMessagesCount);
     }
 
     [TestMethod]
-    public async Task ProcessorReceiveMessage_UnknownUser_CreateNewStatisticWithValueOne()
+    public async Task ProcessChainAsync_UnknownUser_CreateNewStatisticWithValueOne()
     {
         var dailyActivityProcessor = new DailyActivityProcessor(_dataContext.Object);
-        var newUser = _existedUserId + 1;
+        var newUserId = ExistedUserId + 1;
         var message = new Message()
-            .AddText("test message")
-            .AddSender(newUser);
+            .WithText("test message")
+            .WithSender(newUserId);
         var expectedNewUserMessagesCount = 1;
 
-        await dailyActivityProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
+        await dailyActivityProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
-        var actualUserMessagesCount = _testChatState.EventsState.ActivityStatistics.Statistics[newUser];
-        _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Exactly(2));
+        var actualUserMessagesCount = _testChatState.EventsState.ActivityStatistics.Statistics[newUserId];
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Exactly(2));
         _dataContext.Verify(x => x.SaveChangesAsync(), Times.Once());
         Assert.AreEqual(expectedNewUserMessagesCount, actualUserMessagesCount);
     }
 
     [TestMethod]
-    public async Task ProcessorReceiveMessage_DailyActivityDisabled_DoNothing()
+    public async Task ProcessChainAsync_DailyActivityDisabled_DoNothing()
     {
         _testChatState.EventsState.ActivityStatistics.IsEnabled = false;
         var dailyActivityProcessor = new DailyActivityProcessor(_dataContext.Object);
         var message = new Message()
-            .AddText("test message")
-            .AddSender(_existedUserId);
+            .WithText("test message")
+            .WithSender(ExistedUserId);
 
-        await dailyActivityProcessor.ProcessChainAsync(message, _testChatId, _cancellationToken);
+        await dailyActivityProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
-        _dataContext.Verify(x => x.GetChatStateById(_testChatId), Times.Once());
+        _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Once());
         _dataContext.Verify(x => x.SaveChangesAsync(), Times.Never());
     }
 }

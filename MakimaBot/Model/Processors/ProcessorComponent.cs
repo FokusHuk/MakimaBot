@@ -3,7 +3,7 @@ namespace MakimaBot.Model.Processors;
 public class ProcessorComponent
 {
     public ProcessorComponent(DailyActivityProcessor dailyActivityProcessor, 
-                              GptMessageProcessor gptMessageProcessor, 
+                              ChatCommandProcessor gptMessageProcessor, 
                               HealthCheackProcessor healthCheackProcessor, 
                               RandomPhraseProcessor randomPhraseProcessor, 
                               TrustedChatProcessor trustedChatProcessor, 
@@ -18,7 +18,7 @@ public class ProcessorComponent
     }
 
     public DailyActivityProcessor DailyActivityProcessor { get; }
-    public GptMessageProcessor GptMessageProcessor { get; }
+    public ChatCommandProcessor GptMessageProcessor { get; }
     public HealthCheackProcessor HealthCheackProcessor { get; }
     public RandomPhraseProcessor RandomPhraseProcessor { get; }
     public TrustedChatProcessor TrustedChatProcessor { get; }

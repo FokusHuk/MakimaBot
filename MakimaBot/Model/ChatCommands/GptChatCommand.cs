@@ -25,7 +25,7 @@ public class GptChatCommand : ChatCommand
         {
             await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
-                "Промт не может быть пустым.",
+                "Кажется вы забыли указать что хотели узнать🤦‍♀️ (@makima_daily_bot gpt promt)",
                 replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
         }

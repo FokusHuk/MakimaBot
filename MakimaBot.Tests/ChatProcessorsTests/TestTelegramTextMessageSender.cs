@@ -6,7 +6,7 @@ namespace MakimaBot.Tests;
 
 public class TestTelegramTextMessageSender : ITelegramTextMessageSender
 {
-    public Message MessageSent { get; set; }
+    public Message SentMessage { get; set; }
 
     public Task<Message> SendTextMessageAsync(ChatId chatId,
                                               string text, 
@@ -21,8 +21,8 @@ public class TestTelegramTextMessageSender : ITelegramTextMessageSender
                                               IReplyMarkup? replyMarkup = null, 
                                               CancellationToken cancellationToken = default)
     {
-        MessageSent = new Message();
-        MessageSent.Text = text;
-        return Task.Run(() => MessageSent);
+        SentMessage = new Message();
+        SentMessage.Text = text;
+        return Task.FromResult(SentMessage);
     }
 }

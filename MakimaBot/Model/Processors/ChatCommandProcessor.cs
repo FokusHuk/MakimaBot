@@ -2,12 +2,12 @@ using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
-public class GptMessageProcessor : ChatMessageProcessorBase
+public class ChatCommandProcessor : ChatMessageProcessorBase
 {
     private IChatCommandHandler _commandHandler;
     private ITelegramTextMessageSender _telegramTextMessageSender;
     
-    public GptMessageProcessor(IDataContext dataContext, 
+    public ChatCommandProcessor(IDataContext dataContext, 
                                IChatCommandHandler commandHandler,
                                ITelegramTextMessageSender telegramTextMessageSender)
                                : base(dataContext)

@@ -8,21 +8,16 @@ namespace MakimaBot.Tests;
 [TestClass]
 public class UntrustedChatProcessorTests
 {
-    private static long _existingTestChatId = 1;
-    private static string _testChatName = "TestChat";
-
-    private CancellationToken _cancellationToken;
+    private const long ExistingTestChatId = 1;
     private Mock<IDataContext> _dataContext;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _cancellationToken = new CancellationToken();
-
         var state = new TestBotStateBuilder()
             .WithChat(new TestChatStateBuilder()
-                .WithId(_existingTestChatId)
-                .WithName(_testChatName)
+                .WithId(ExistingTestChatId)
+                .WithName("TestChat")
                 .Build())
             .WithInfrastructure(new TestInfrastructureStateBuilder()
                 .Build())
@@ -41,25 +36,25 @@ public class UntrustedChatProcessorTests
                 It.IsAny<string>()))
             .Verifiable();
         _dataContext
-            .Setup(x => x.IsChatExists(_existingTestChatId))
+            .Setup(x => x.IsChatExists(ExistingTestChatId))
             .Returns(true)
             .Verifiable();
         _dataContext
-            .Setup(x => x.IsChatExists(It.IsNotIn<long>(_existingTestChatId)))
+            .Setup(x => x.IsChatExists(It.IsNotIn<long>(ExistingTestChatId)))
             .Returns(false);
     }
 
     [TestMethod]
-    public async Task ReceiveMessageIn_TrustedChat_DoNothing()
+    public async Task ProcessChainAsync_MessageInTrustedChat_DoNothing()
     {
         var message = new Message()
-            .AddText("test")
-            .AddSender(1);
+            .WithText("test")
+            .WithSender(1);
         var untrustedChatProcessor = new UntrustedChatProcessor(_dataContext.Object);
 
-        await untrustedChatProcessor.ProcessChainAsync(message, _existingTestChatId, _cancellationToken);
+        await untrustedChatProcessor.ProcessChainAsync(message, ExistingTestChatId, CancellationToken.None);
 
-        _dataContext.Verify(x => x.IsChatExists(_existingTestChatId), Times.Once());
+        _dataContext.Verify(x => x.IsChatExists(ExistingTestChatId), Times.Once());
         _dataContext.Verify(x => x.AddUnknownMessage(
                     It.IsAny<DateTime>(),
                     It.IsAny<long>(),
@@ -69,15 +64,15 @@ public class UntrustedChatProcessorTests
     }
 
     [TestMethod]
-    public async Task ReceiveMessageIn_UntrustedChat_AddNewUnknownMesssageAndSaveChanges()
+    public async Task ProcessChainAsync_MessageInUntrustedChat_AddNewUnknownMesssageAndSaveChanges()
     {
-        var notExistedChatId = _existingTestChatId + 1;
+        var notExistedChatId = ExistingTestChatId + 1;
         var message = new Message()
-            .AddText("test")
-            .AddSender(1);
+            .WithText("test")
+            .WithSender(1);
         var untrustedChatProcessor = new UntrustedChatProcessor(_dataContext.Object);
 
-        await untrustedChatProcessor.ProcessChainAsync(message, notExistedChatId, _cancellationToken);
+        await untrustedChatProcessor.ProcessChainAsync(message, notExistedChatId, CancellationToken.None);
 
         _dataContext.Verify(x => x.IsChatExists(notExistedChatId), Times.Once());
         _dataContext.Verify(x => x.AddUnknownMessage(

@@ -111,7 +111,7 @@ public class Startup(IConfiguration configuration)
 
 
         services.AddTransient<DailyActivityProcessor>();
-        services.AddTransient<GptMessageProcessor>();
+        services.AddTransient<ChatCommandProcessor>();
         services.AddTransient<HealthCheackProcessor>();
         services.AddTransient<RandomPhraseProcessor>();
         services.AddTransient<TrustedChatProcessor>();

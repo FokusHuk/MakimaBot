@@ -15,7 +15,7 @@ public abstract class ChatMessageProcessorBase
         _dataContext = dataContext;
     }
 
-    public virtual bool СontinueAnyway { get => false; }
+    protected virtual bool СontinueAnyway { get => false; }
 
     public ChatMessageProcessorBase ChainedWith(ChatMessageProcessorBase processor)
     {
