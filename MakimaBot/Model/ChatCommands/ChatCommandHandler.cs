@@ -28,35 +28,26 @@ public class ChatCommandHandler : IChatCommandHandler
         {
             await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
-                "Неизвестная команда💔 @makima_daily_bot <команда> <параметры>", // todo: сообщить юзеру, что меншн это команда
+                @"@makima\_daily\_bot это команда! Запросите список доступных команд ( `@makima_daily_bot list` )",
                 replyToMessageId: message.MessageId,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
-
-        var allowedCommands = _commands.Select(command => command.Name).ToArray(); // todo: что? зачем сейчас? почему? Кажется тут чего-то не хватает, например премиссий💔
 
         var currentCommand = _commands.SingleOrDefault(command => command.Name == commandName);
         if (currentCommand is null)
         {
             await _telegramTextMessageSender.SendTextMessageAsync(
                 chatState.ChatId,
-                "Команда не распознана🙍‍♀️ запросите список доступных команд (list)",
+                $"Команда < **{commandName.Trim()}** >  не распознана🙍‍♀️ Запросите список доступных команд ( `@makima_daily_bot list` )",
                 replyToMessageId: message.MessageId,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
 
         var rawParameters = match.First().Groups[2].Value;
-        if (string.IsNullOrEmpty(rawParameters))
-        {
-            await _telegramTextMessageSender.SendTextMessageAsync(
-                chatState.ChatId,
-                "Кажется вы забыли указать что хотели узнать🤦‍♀️ @makima_daily_bot <gpt> <promt>",
-                replyToMessageId: message.MessageId,
-                cancellationToken: cancellationToken);
-            return;
-        }
 
         await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramTextMessageSender, cancellationToken); 
     }
