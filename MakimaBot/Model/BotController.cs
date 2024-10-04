@@ -39,12 +39,12 @@ public class BotController : ControllerBase
         });
     }
 
-    // [HttpGet]
-    // [Route("state")]
-    // public async Task<IActionResult> GetStateAsync(CancellationToken cancellationToken)
-    // {
-    //     await _dataContext.ConfigureAsync();
+    [HttpGet]
+    [Route("state")]
+    public async Task<IActionResult> GetStateAsync(CancellationToken cancellationToken)
+    {
+        await _dataContext.ConfigureAsync();
 
-    //     return new JsonResult(_dataContext.State);
-    // }
+        return new JsonResult(_dataContext.State);
+    }
 }

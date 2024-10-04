@@ -2,6 +2,7 @@ namespace MakimaBot.Model;
 
 public interface IDataContext
 {
+    BotState State { get; }
     Task ConfigureAsync();
     Task<bool> SaveChangesAsync();
     IEnumerable<BotError> GetAllErrors();
