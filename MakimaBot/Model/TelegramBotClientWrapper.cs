@@ -13,25 +13,17 @@ public class TelegramBotClientWrapper : ITelegramBotClientWrapper
         _telegramBotClient = telegramBotClient;
     }
 
-    public Task<Chat> GetChatAsync(ChatId chatId, CancellationToken cancellationToken = default)
-    {
-        return _telegramBotClient.GetChatAsync(chatId, cancellationToken);
-    }
+    public Task<Chat> GetChatAsync(ChatId chatId, CancellationToken cancellationToken = default) =>
+        _telegramBotClient.GetChatAsync(chatId, cancellationToken);
 
-    public Task<ChatMember> GetChatMemberAsync(ChatId chatId, long userId, CancellationToken cancellationToken = default)
-    {
-        return _telegramBotClient.GetChatMemberAsync(chatId, userId, cancellationToken);
-    }
-
-    public Task<User> GetMeAsync(CancellationToken cancellationToken = default)
-    {
-        return _telegramBotClient.GetMeAsync(cancellationToken);
-    }
-
-    public Task<Update[]> GetUpdatesAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default)
-    {
-        return _telegramBotClient.GetUpdatesAsync(offset, limit, cancellationToken: cancellationToken);
-    }
+    public Task<ChatMember> GetChatMemberAsync(ChatId chatId, long userId, CancellationToken cancellationToken = default) =>
+        _telegramBotClient.GetChatMemberAsync(chatId, userId, cancellationToken);
+    
+    public Task<User> GetMeAsync(CancellationToken cancellationToken = default) => 
+        _telegramBotClient.GetMeAsync(cancellationToken);
+    
+    public Task<Update[]> GetUpdatesAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default) =>
+        _telegramBotClient.GetUpdatesAsync(offset, limit, cancellationToken: cancellationToken);
 
     public Task<Message> SendTextMessageAsync(ChatId chatId,
                                               string text,
