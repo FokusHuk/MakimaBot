@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Telegram.Bot;
 
 namespace MakimaBot.Model.Events;
 
@@ -21,12 +20,12 @@ public class ActivityStatisticsEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < statisticsTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(TelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramBotClientWrapper, ChatState chat)
     {
         var membersStatistics = "";
         foreach (var stats in chat.EventsState.ActivityStatistics.Statistics)
         {
-            var member = await telegramBotClient.GetChatMemberAsync(chat.ChatId, stats.Key);
+            var member = await telegramBotClientWrapper.GetChatMemberAsync(chat.ChatId, stats.Key);
             var memberName = member.User.Username ?? member.User.FirstName;
 
             membersStatistics += $"{memberName}: {stats.Value}\n";
@@ -34,7 +33,7 @@ public class ActivityStatisticsEvent : IChatEvent
 
         if (string.IsNullOrEmpty(membersStatistics))
         {
-            await telegramBotClient.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chatId: chat.ChatId,
                 text: """
                 Сегодня правила не нарушали 🤤
@@ -42,7 +41,7 @@ public class ActivityStatisticsEvent : IChatEvent
         }
         else
         {
-            await telegramBotClient.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chatId: chat.ChatId,
                 text: $"""
                 Подведем стастистику сами знаете чего 😌

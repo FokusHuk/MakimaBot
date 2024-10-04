@@ -11,7 +11,7 @@ public class GptClient : IGptClient
 
     private readonly IOptions<GptOptions> _gptOptions;
 
-    private const string DefaultRole = "Ты мой собеседник. Поддерживай разговор";
+    private const string DefaultRole = " Тебя зовут Макима. Ты добрая и общительная девушка. Ты мой собеседник. Поддерживай разговор";
 
     public GptClient(IHttpClientFactory httpClientFactory, IOptions<GptOptions> gptOptions)
     {

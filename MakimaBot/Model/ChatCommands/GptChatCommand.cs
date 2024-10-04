@@ -1,4 +1,3 @@
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model;
@@ -18,21 +17,21 @@ public class GptChatCommand : ChatCommand
         Message message,
         ChatState chatState,
         string rawParameters,
-        TelegramBotClient _telegramBotClient,
+        ITelegramBotClientWrapper _telegramBotClientWrapper,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(rawParameters))
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                "Промт не может быть пустым.",
+                "Кажется вы забыли указать что хотели узнать🤦‍♀️ (@makima_daily_bot gpt promt)",
                 replyToMessageId: message.MessageId,
                 cancellationToken: cancellationToken);
         }
 
         var response = await _gptClient.SendAsync(rawParameters);
 
-        await _telegramBotClient.SendTextMessageAsync(
+        await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
                 response.Result.Alternatives.First().Message.Text,
                 replyToMessageId: message.MessageId,

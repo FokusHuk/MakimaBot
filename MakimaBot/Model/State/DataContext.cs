@@ -1,6 +1,6 @@
 ﻿namespace MakimaBot.Model;
 
-public class DataContext
+public class DataContext : IDataContext
 {
     private readonly IBucketClient _bucketClient;
     public BotState State { get; private set; }
@@ -61,6 +61,11 @@ public class DataContext
     public ChatState? GetChatStateById(long chatId)
     {
         return State.Chats.SingleOrDefault(chat => chat.ChatId == chatId);
+    }
+
+    public bool IsChatExists(long chatId)
+    {
+        return GetChatStateById(chatId) is not null;
     }
 
     public IEnumerable<ChatState> GetAllChatStates()
