@@ -25,7 +25,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < notificationTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(ITelegramTextMessageSender telegramTextMessageSender, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramTextMessageSender, ChatState chat)
     {
         if (chat?.Name != "akima_yooukie")
             return;

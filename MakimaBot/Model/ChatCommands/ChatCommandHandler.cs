@@ -18,7 +18,7 @@ public class ChatCommandHandler : IChatCommandHandler
     public async Task HandleAsync(
         Message message,
         ChatState chatState,
-        ITelegramTextMessageSender _telegramTextMessageSender,
+        ITelegramBotClientWrapper _telegramBotClientWrapper,
         CancellationToken cancellationToken)
     {
         var match = Regex.Matches(message.Text, CommandPattern, RegexOptions.IgnoreCase);
@@ -26,7 +26,7 @@ public class ChatCommandHandler : IChatCommandHandler
         var commandName = match.First().Groups[1].Value;
         if (string.IsNullOrEmpty(commandName))
         {
-            await _telegramTextMessageSender.SendTextMessageAsync(
+            await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
                 @"@makima\_daily\_bot это команда! Запросите список доступных команд ( `@makima_daily_bot list` )",
                 replyToMessageId: message.MessageId,
@@ -38,7 +38,7 @@ public class ChatCommandHandler : IChatCommandHandler
         var currentCommand = _commands.SingleOrDefault(command => command.Name == commandName);
         if (currentCommand is null)
         {
-            await _telegramTextMessageSender.SendTextMessageAsync(
+            await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
                 $"Команда < **{commandName.Trim()}** >  не распознана🙍‍♀️ Запросите список доступных команд ( `@makima_daily_bot list` )",
                 replyToMessageId: message.MessageId,
@@ -49,6 +49,6 @@ public class ChatCommandHandler : IChatCommandHandler
 
         var rawParameters = match.First().Groups[2].Value;
 
-        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramTextMessageSender, cancellationToken); 
+        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClientWrapper, cancellationToken); 
     }
 }

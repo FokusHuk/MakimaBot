@@ -78,7 +78,7 @@ public class Startup(IConfiguration configuration)
             var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
             return new TelegramBotClient(telegramOptions.Token);
         });
-        services.AddSingleton<ITelegramTextMessageSender, TelegramTextMessageSender>();
+        services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
 
         services.AddSingleton<IChatEvent, MorningMessageEvent>();
         services.AddSingleton<IChatEvent, EveningMessageEvent>();

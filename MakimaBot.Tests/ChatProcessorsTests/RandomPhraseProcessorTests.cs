@@ -9,13 +9,13 @@ namespace MakimaBot.Tests;
 public class RandomPhraseProcessorTests
 {
     private const long ExistedChatId = 1;
-    private TestTelegramTextMessageSender _telegramTextMessageSender;
+    private TestTelegramBotClientWrapper _telegramBotClientWrapper;
     private Mock<IDataContext> _dataContext;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _telegramTextMessageSender = new TestTelegramTextMessageSender();
+        _telegramBotClientWrapper = new TestTelegramBotClientWrapper();
 
         var testChatState = new TestChatStateBuilder()
             .WithId(ExistedChatId)
@@ -36,20 +36,20 @@ public class RandomPhraseProcessorTests
     [TestMethod]
     public async Task ProcessChainAsync_MessageInTrustedChat_SendRandomPhraseBack()
     {      
-        var randomPhraseProcessor = new RandomPhraseProcessorWithoutRandom(_dataContext.Object, _telegramTextMessageSender);
+        var randomPhraseProcessor = new RandomPhraseProcessorWithoutRandom(_dataContext.Object, _telegramBotClientWrapper);
      
         await randomPhraseProcessor.ProcessChainAsync(message: null, ExistedChatId, CancellationToken.None);
 
         _dataContext.Verify(x => x.GetChatStateById(ExistedChatId), Times.Once());
-        Assert.IsTrue(_telegramTextMessageSender.SentMessage is not null);
-        Assert.IsTrue(!string.IsNullOrEmpty(_telegramTextMessageSender.SentMessage.Text));
+        Assert.IsTrue(_telegramBotClientWrapper.SentMessage is not null);
+        Assert.IsTrue(!string.IsNullOrEmpty(_telegramBotClientWrapper.SentMessage.Text));
     }
 }
 
 file class RandomPhraseProcessorWithoutRandom : RandomPhraseProcessor
 {
     public RandomPhraseProcessorWithoutRandom(IDataContext dataContext, 
-                                              ITelegramTextMessageSender telegramTextMessageSender) 
+                                              ITelegramBotClientWrapper telegramTextMessageSender) 
                                               : base(dataContext, telegramTextMessageSender)
     {
 

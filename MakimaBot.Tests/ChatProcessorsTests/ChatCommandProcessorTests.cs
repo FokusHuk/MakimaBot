@@ -35,7 +35,7 @@ public class ChatCommandProcessorTests
             .Setup(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),
-                It.IsAny<TelegramTextMessageSender>(),
+                It.IsAny<TelegramBotClientWrapper>(),
                 It.IsAny<CancellationToken>()
             ))
             .Verifiable();
@@ -53,7 +53,7 @@ public class ChatCommandProcessorTests
         _chatCommandHandler.Verify(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),
-                It.IsAny<TelegramTextMessageSender>(),
+                It.IsAny<TelegramBotClientWrapper>(),
                 It.IsAny<CancellationToken>()
             ), Times.Once());
     }
@@ -70,7 +70,7 @@ public class ChatCommandProcessorTests
         _chatCommandHandler.Verify(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),
-                It.IsAny<TelegramTextMessageSender>(),
+                It.IsAny<TelegramBotClientWrapper>(),
                 It.IsAny<CancellationToken>()
             ), Times.Never());
     }
@@ -87,7 +87,7 @@ public class ChatCommandProcessorTests
         _chatCommandHandler.Verify(x => x.HandleAsync(
                 It.IsAny<Message>(),
                 It.IsAny<ChatState>(),
-                It.IsAny<TelegramTextMessageSender>(),
+                It.IsAny<TelegramBotClientWrapper>(),
                 It.IsAny<CancellationToken>()
             ), Times.Never());
     }

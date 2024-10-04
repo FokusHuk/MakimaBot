@@ -7,6 +7,6 @@ public interface IChatCommandHandler
     Task HandleAsync(
         Message message,
         ChatState chatState,
-        ITelegramTextMessageSender _telegramTextMessageSender,
+        ITelegramBotClientWrapper _telegramBotClientWrapper,
         CancellationToken cancellationToken);
 }

@@ -5,21 +5,21 @@ namespace MakimaBot.Model.Processors;
 public class ChatCommandProcessor : ChatMessageProcessorBase
 {
     private IChatCommandHandler _commandHandler;
-    private ITelegramTextMessageSender _telegramTextMessageSender;
+    private ITelegramBotClientWrapper _telegramBotClientWrapper;
     
     public ChatCommandProcessor(IDataContext dataContext, 
                                IChatCommandHandler commandHandler,
-                               ITelegramTextMessageSender telegramTextMessageSender)
+                               ITelegramBotClientWrapper telegramTextMessageSender)
                                : base(dataContext)
     {
         _commandHandler = commandHandler;
-        _telegramTextMessageSender = telegramTextMessageSender;
+        _telegramBotClientWrapper = telegramTextMessageSender;
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         var chatState = _dataContext.GetChatStateById(chatId);
-        await _commandHandler.HandleAsync(message, chatState, _telegramTextMessageSender, cancellationToken);
+        await _commandHandler.HandleAsync(message, chatState, _telegramBotClientWrapper, cancellationToken);
     }
 
     protected override bool ShouldLaunchAsync(Message message, long chatId, CancellationToken cancellationToken)

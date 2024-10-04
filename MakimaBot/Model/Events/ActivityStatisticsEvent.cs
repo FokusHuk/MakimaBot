@@ -5,17 +5,17 @@ namespace MakimaBot.Model.Events;
 
 public class ActivityStatisticsEvent : IChatEvent
 {
-    public ActivityStatisticsEvent(ITelegramBotClient telegramBotClient)
-    {
-        _telegramBotClient = telegramBotClient;
-    }
     private readonly TimeSpan statisticsTimeStartUtc =
         DateTime.Parse("2023-01-01 20:00:00", CultureInfo.InvariantCulture).TimeOfDay;
 
     private readonly TimeSpan statisticsTimeEndUtc =
         DateTime.Parse("2023-01-01 20:30:00", CultureInfo.InvariantCulture).TimeOfDay;
-    private readonly ITelegramBotClient _telegramBotClient;
+    private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
 
+    public ActivityStatisticsEvent(ITelegramBotClientWrapper telegramBotClientWrapper)
+    {
+        _telegramBotClientWrapper = telegramBotClientWrapper;
+    }
     public bool ShouldLaunch(ChatState chat)
     {
         var currentDateTimeUtc = DateTime.UtcNow;
@@ -26,12 +26,12 @@ public class ActivityStatisticsEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < statisticsTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(ITelegramTextMessageSender telegramTextMessageSender, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramTextMessageSender, ChatState chat)
     {
         var membersStatistics = "";
         foreach (var stats in chat.EventsState.ActivityStatistics.Statistics)
         {
-            var member = await _telegramBotClient.GetChatMemberAsync(chat.ChatId, stats.Key);
+            var member = await _telegramBotClientWrapper.GetChatMemberAsync(chat.ChatId, stats.Key);
             var memberName = member.User.Username ?? member.User.FirstName;
 
             membersStatistics += $"{memberName}: {stats.Value}\n";

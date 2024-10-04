@@ -4,19 +4,16 @@ namespace MakimaBot.Model.Events;
 
 public class ChatEventsHandler
 {
-    private readonly ITelegramTextMessageSender _telegramTextMessageSender;
-    private readonly ITelegramBotClient _telegramBotClient;
+    private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
     private readonly IEnumerable<IChatEvent> _chatEvents;
     private readonly IDataContext _dataContext;
 
     public ChatEventsHandler(
-        ITelegramTextMessageSender telegramTextMessageSender,
-        ITelegramBotClient telegramBotClient,
+        ITelegramBotClientWrapper telegramBotClientWrapper,
         IEnumerable<IChatEvent> chatEvents,
         IDataContext dataContext)
     {
-        _telegramTextMessageSender = telegramTextMessageSender;
-        _telegramBotClient = telegramBotClient;
+        _telegramBotClientWrapper = telegramBotClientWrapper;
         _chatEvents = chatEvents;
         _dataContext = dataContext;
     }
@@ -63,7 +60,7 @@ public class ChatEventsHandler
     
     private async Task HandleChatEventsAsync(ChatState chatState)
     {
-        var chat = await _telegramBotClient.GetChatAsync(chatState.ChatId);
+        var chat = await _telegramBotClientWrapper.GetChatAsync(chatState.ChatId);
         
         if (chat.Username != null && chat.Username.Contains(chatState.Name, StringComparison.OrdinalIgnoreCase)
             || chat.Title != null && chat.Title.Contains(chatState.Name, StringComparison.OrdinalIgnoreCase))
@@ -72,7 +69,7 @@ public class ChatEventsHandler
             {
                 if (chatEvent.ShouldLaunch(chatState))
                 {
-                    await chatEvent.HandleEventAsync(_telegramTextMessageSender, chatState);
+                    await chatEvent.HandleEventAsync(_telegramBotClientWrapper, chatState);
                     await _dataContext.SaveChangesAsync();
                 }
             }
