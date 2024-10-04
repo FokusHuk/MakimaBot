@@ -1,6 +1,4 @@
-﻿using Telegram.Bot;
-
-namespace MakimaBot.Model.Events;
+﻿namespace MakimaBot.Model.Events;
 
 public class MorningMessageEvent : ScheduledEventBase, IChatEvent
 {

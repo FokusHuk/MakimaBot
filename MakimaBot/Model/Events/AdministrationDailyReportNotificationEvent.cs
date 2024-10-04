@@ -1,7 +1,3 @@
-using System.Globalization;
-using System.Text.Json;
-using Telegram.Bot;
-
 namespace MakimaBot.Model.Events;
 
 public class AdministrationDailyReportNotificationEvent : IChatEvent
@@ -25,7 +21,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < notificationTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramTextMessageSender, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramBotClientWrapper, ChatState chat)
     {
         if (chat?.Name != "akima_yooukie")
             return;
@@ -36,7 +32,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
 
         if (!string.IsNullOrWhiteSpace(errorsReport))
         {
-            await telegramTextMessageSender.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chat.ChatId,
                 TrimTelegramMessage(errorsReport),
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -46,7 +42,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
 
         if (!string.IsNullOrWhiteSpace(unknownMessagesReport))
         {
-            await telegramTextMessageSender.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chat.ChatId,
                 TrimTelegramMessage(unknownMessagesReport),
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
@@ -60,7 +56,7 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
             *Daily Makima bot report* 
             Поздравляю, таска не сдохла!!!! Просто сегодня не было ни новых рандомных типОв, ни ошибок.  
             """;
-            await telegramTextMessageSender.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chat.ChatId,
                 message,
                 parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);

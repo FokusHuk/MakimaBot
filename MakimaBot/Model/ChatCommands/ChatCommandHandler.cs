@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model;
