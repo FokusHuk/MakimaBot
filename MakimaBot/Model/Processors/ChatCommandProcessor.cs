@@ -6,14 +6,15 @@ public class ChatCommandProcessor : ChatMessageProcessorBase
 {
     private IChatCommandHandler _commandHandler;
     private ITelegramBotClientWrapper _telegramBotClientWrapper;
-    
-    public ChatCommandProcessor(IDataContext dataContext, 
-                               IChatCommandHandler commandHandler,
-                               ITelegramBotClientWrapper telegramTextMessageSender)
-                               : base(dataContext)
+
+    public ChatCommandProcessor(
+        IDataContext dataContext,
+        IChatCommandHandler commandHandler,
+        ITelegramBotClientWrapper telegramBotClientWrapper)
+        : base(dataContext)
     {
         _commandHandler = commandHandler;
-        _telegramBotClientWrapper = telegramTextMessageSender;
+        _telegramBotClientWrapper = telegramBotClientWrapper;
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)

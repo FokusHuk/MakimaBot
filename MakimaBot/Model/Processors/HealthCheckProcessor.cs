@@ -6,11 +6,12 @@ public class HealthCheackProcessor : ChatMessageProcessorBase
 {
     private ITelegramBotClientWrapper _telegramBotClientWrapper;
 
-    public HealthCheackProcessor(IDataContext dataContext,
-                                 ITelegramBotClientWrapper telegramTextMessageSender) 
-                                 : base(dataContext)
+    public HealthCheackProcessor(
+        IDataContext dataContext,
+        ITelegramBotClientWrapper telegramBotClientWrapper) 
+        : base(dataContext)
     {
-        _telegramBotClientWrapper = telegramTextMessageSender;
+        _telegramBotClientWrapper = telegramBotClientWrapper;
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)

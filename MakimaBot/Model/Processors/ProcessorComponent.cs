@@ -2,12 +2,13 @@ namespace MakimaBot.Model.Processors;
 
 public class ProcessorComponent
 {
-    public ProcessorComponent(DailyActivityProcessor dailyActivityProcessor, 
-                              ChatCommandProcessor gptMessageProcessor, 
-                              HealthCheackProcessor healthCheackProcessor, 
-                              RandomPhraseProcessor randomPhraseProcessor, 
-                              TrustedChatProcessor trustedChatProcessor, 
-                              UntrustedChatProcessor untrustedChatProcessor)
+    public ProcessorComponent(
+        DailyActivityProcessor dailyActivityProcessor, 
+        ChatCommandProcessor gptMessageProcessor, 
+        HealthCheackProcessor healthCheackProcessor, 
+        RandomPhraseProcessor randomPhraseProcessor, 
+        TrustedChatProcessor trustedChatProcessor, 
+        UntrustedChatProcessor untrustedChatProcessor)
     {
         DailyActivityProcessor = dailyActivityProcessor;
         GptMessageProcessor = gptMessageProcessor;

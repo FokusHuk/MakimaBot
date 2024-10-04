@@ -4,6 +4,7 @@ public class DefaultProcessorsChainFactory : ProcessorsChainFactory
 {
     public DefaultProcessorsChainFactory(ProcessorComponent component) : base(component)
     {
+        
     }
 
     public override ChatMessageProcessorBase CreateChain()

@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Telegram.Bot;
 
 namespace MakimaBot.Model.Events;
 
@@ -10,12 +9,7 @@ public class ActivityStatisticsEvent : IChatEvent
 
     private readonly TimeSpan statisticsTimeEndUtc =
         DateTime.Parse("2023-01-01 20:30:00", CultureInfo.InvariantCulture).TimeOfDay;
-    private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
 
-    public ActivityStatisticsEvent(ITelegramBotClientWrapper telegramBotClientWrapper)
-    {
-        _telegramBotClientWrapper = telegramBotClientWrapper;
-    }
     public bool ShouldLaunch(ChatState chat)
     {
         var currentDateTimeUtc = DateTime.UtcNow;
@@ -26,12 +20,12 @@ public class ActivityStatisticsEvent : IChatEvent
                && currentDateTimeUtc.TimeOfDay < statisticsTimeEndUtc;
     }
 
-    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramTextMessageSender, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramBotClientWrapper, ChatState chat)
     {
         var membersStatistics = "";
         foreach (var stats in chat.EventsState.ActivityStatistics.Statistics)
         {
-            var member = await _telegramBotClientWrapper.GetChatMemberAsync(chat.ChatId, stats.Key);
+            var member = await telegramBotClientWrapper.GetChatMemberAsync(chat.ChatId, stats.Key);
             var memberName = member.User.Username ?? member.User.FirstName;
 
             membersStatistics += $"{memberName}: {stats.Value}\n";
@@ -39,7 +33,7 @@ public class ActivityStatisticsEvent : IChatEvent
 
         if (string.IsNullOrEmpty(membersStatistics))
         {
-            await telegramTextMessageSender.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chatId: chat.ChatId,
                 text: """
                 Сегодня правила не нарушали 🤤
@@ -47,7 +41,7 @@ public class ActivityStatisticsEvent : IChatEvent
         }
         else
         {
-            await telegramTextMessageSender.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chatId: chat.ChatId,
                 text: $"""
                 Подведем стастистику сами знаете чего 😌

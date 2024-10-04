@@ -48,9 +48,10 @@ public class RandomPhraseProcessorTests
 
 file class RandomPhraseProcessorWithoutRandom : RandomPhraseProcessor
 {
-    public RandomPhraseProcessorWithoutRandom(IDataContext dataContext, 
-                                              ITelegramBotClientWrapper telegramTextMessageSender) 
-                                              : base(dataContext, telegramTextMessageSender)
+    public RandomPhraseProcessorWithoutRandom(
+        IDataContext dataContext, 
+        ITelegramBotClientWrapper telegramBotClientWrapper) 
+        : base(dataContext, telegramBotClientWrapper)
     {
 
     }

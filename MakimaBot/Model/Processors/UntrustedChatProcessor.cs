@@ -6,6 +6,7 @@ public class UntrustedChatProcessor : ChatMessageProcessorBase
 {
     public UntrustedChatProcessor(IDataContext dataContext) : base(dataContext)
     {
+        
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)

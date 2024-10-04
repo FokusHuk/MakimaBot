@@ -45,7 +45,7 @@ public class ChatCommandProcessorTests
     public async Task ProcessChainAsync_RightRequest_SendRequestToApi()
     {
         var message = new Message().WithText("@makima_daily_bot  gpt random   Promt  ");
-        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
+        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramBotClientWrapper: null);
 
         await gptMessageProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
@@ -66,7 +66,7 @@ public class ChatCommandProcessorTests
     public async Task ProcessChainAsync_WrongRequest_DoNothing(string text)
     {
         var message = new Message().WithText(text);
-        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramTextMessageSender: null);
+        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramBotClientWrapper: null);
 
         await gptMessageProcessor.ProcessChainAsync(message, ExistedChatId, CancellationToken.None);
 
