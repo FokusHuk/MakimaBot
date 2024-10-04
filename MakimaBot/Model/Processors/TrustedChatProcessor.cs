@@ -1,11 +1,10 @@
-using MakimaBot.Model;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
 public class TrustedChatProcessor : ChatMessageProcessorBase
 {
-    public TrustedChatProcessor(DataContext dataContext) : base(dataContext)
+    public TrustedChatProcessor(IDataContext dataContext) : base(dataContext)
     {
 
     }

@@ -4,7 +4,7 @@ public class UnknownChatMessagesCleanupJob : InfrastructureJob
 {
     public override string Name => $"{nameof(UnknownChatMessagesCleanupJob)}";
     
-    public override async Task ExecuteAsync(DataContext dataContext)
+    public override async Task ExecuteAsync(IDataContext dataContext)
     {
         var currentDateTimeUtc = DateTime.UtcNow;
         var cleanupThreshold = TimeSpan.FromDays(7);

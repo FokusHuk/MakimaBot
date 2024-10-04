@@ -1,6 +1,4 @@
-﻿using Telegram.Bot;
-
-namespace MakimaBot.Model.Events;
+﻿namespace MakimaBot.Model.Events;
 
 public class MorningMessageEvent : ScheduledEventBase, IChatEvent
 {
@@ -9,9 +7,9 @@ public class MorningMessageEvent : ScheduledEventBase, IChatEvent
     
     public bool ShouldLaunch(ChatState chat) => ShouldLaunch(chat.EventsState.MorningMessage);
 
-    public async Task HandleEventAsync(ITelegramBotClient telegramBotClient, ChatState chat)
+    public async Task HandleEventAsync(ITelegramBotClientWrapper telegramBotClientWrapper, ChatState chat)
     {
-        await telegramBotClient.SendTextMessageAsync(
+        await telegramBotClientWrapper.SendTextMessageAsync(
            chatId: chat.ChatId,
            text: GetRandomMessage());
 

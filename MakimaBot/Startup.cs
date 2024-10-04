@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MakimaBot.Model.Processors;
+using MakimaBot;
 
 public class Startup(IConfiguration configuration)
 {
@@ -70,14 +71,14 @@ public class Startup(IConfiguration configuration)
                 bucketOptions.StateFileName);
         });
 
-        services.AddSingleton<DataContext>();
+        services.AddSingleton<IDataContext, DataContext>();
 
         services.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider =>
         {
             var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
             return new TelegramBotClient(telegramOptions.Token);
         });
-
+        services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
 
         services.AddSingleton<IChatEvent, MorningMessageEvent>();
         services.AddSingleton<IChatEvent, EveningMessageEvent>();
@@ -98,7 +99,7 @@ public class Startup(IConfiguration configuration)
 
         services.AddHttpClient();
 
-        services.AddSingleton<ChatCommandHandler>();
+        services.AddSingleton<IChatCommandHandler, ChatCommandHandler>();
         services.AddSingleton<ChatCommand, GptChatCommand>();
         services.AddSingleton<IGptClient, GptClient>();
 
@@ -110,7 +111,7 @@ public class Startup(IConfiguration configuration)
 
 
         services.AddTransient<DailyActivityProcessor>();
-        services.AddTransient<GptMessageProcessor>();
+        services.AddTransient<ChatCommandProcessor>();
         services.AddTransient<HealthCheackProcessor>();
         services.AddTransient<RandomPhraseProcessor>();
         services.AddTransient<TrustedChatProcessor>();

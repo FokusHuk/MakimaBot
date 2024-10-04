@@ -1,10 +1,9 @@
 using System.Text.RegularExpressions;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model;
 
-public class ChatCommandHandler
+public class ChatCommandHandler : IChatCommandHandler
 {
     private readonly IEnumerable<ChatCommand> _commands;
 
@@ -18,39 +17,37 @@ public class ChatCommandHandler
     public async Task HandleAsync(
         Message message,
         ChatState chatState,
-        ITelegramBotClient _telegramBotClient,
+        ITelegramBotClientWrapper _telegramBotClientWrapper,
         CancellationToken cancellationToken)
     {
         var match = Regex.Matches(message.Text, CommandPattern, RegexOptions.IgnoreCase);
 
-        if (match.Count == 0)
+        var commandName = match.First().Groups[1].Value;
+        if (string.IsNullOrEmpty(commandName))
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                "Неизвестная команда", // todo: сообщить юзеру, что меншн это команда
+                @"@makima\_daily\_bot это команда! Запросите список доступных команд ( `@makima_daily_bot list` )",
                 replyToMessageId: message.MessageId,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
 
-        var commandName = match.First().Groups[1].Value;
-
-        var allowedCommands = _commands.Select(command => command.Name).ToArray();
-
         var currentCommand = _commands.SingleOrDefault(command => command.Name == commandName);
-
-        if (currentCommand == null)
+        if (currentCommand is null)
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                "Команда не распознана, запросите список доступных команд (list)",
+                $"Команда < **{commandName.Trim()}** >  не распознана🙍‍♀️ Запросите список доступных команд ( `@makima_daily_bot list` )",
                 replyToMessageId: message.MessageId,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
 
         var rawParameters = match.First().Groups[2].Value;
 
-        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClient, cancellationToken); 
+        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClientWrapper, cancellationToken); 
     }
 }

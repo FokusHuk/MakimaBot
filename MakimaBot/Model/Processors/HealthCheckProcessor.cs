@@ -1,25 +1,24 @@
-using MakimaBot.Model;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
 public class HealthCheackProcessor : ChatMessageProcessorBase
 {
-    private ITelegramBotClient _telegramBotClient;
+    private ITelegramBotClientWrapper _telegramBotClientWrapper;
 
-    public HealthCheackProcessor(DataContext dataContext,
-                                 ITelegramBotClient telegramBotClient) 
-                                 : base(dataContext)
+    public HealthCheackProcessor(
+        IDataContext dataContext,
+        ITelegramBotClientWrapper telegramBotClientWrapper) 
+        : base(dataContext)
     {
-        _telegramBotClient = telegramBotClient;
+        _telegramBotClientWrapper = telegramBotClientWrapper;
     }
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         if (message.Sticker.Emoji == "😤")
         {
-            await _telegramBotClient.SendTextMessageAsync(
+            await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatId: chatId,
                 text: "❤️",
                 replyToMessageId: message.MessageId,

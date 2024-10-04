@@ -1,26 +1,25 @@
 ﻿using MakimaBot.Model.Events;
 using MakimaBot.Model.Infrastructure;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model;
 
 public class BotService : IBotService
 {
-    private readonly ITelegramBotClient _telegramClient;
-    private readonly DataContext _dataContext;
+    private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
+    private readonly IDataContext _dataContext;
     private readonly ChatEventsHandler _chatEventsHandler;
     private readonly ChatMessagesHandler _chatMessagesHandler;
     private readonly InfrastructureJobsHandler _infrastructureJobsHandler;
 
     public BotService(
-        ITelegramBotClient telegramClient,
-        DataContext dataContext,
+        ITelegramBotClientWrapper telegramClient,
+        IDataContext dataContext,
         ChatEventsHandler chatEventsHandler,
         ChatMessagesHandler chatMessagesHandler,
         InfrastructureJobsHandler infrastructureJobsHandler)
     {
-        _telegramClient = telegramClient;
+        _telegramBotClientWrapper = telegramClient;
         _dataContext = dataContext;
         _chatEventsHandler = chatEventsHandler;
         _chatMessagesHandler = chatMessagesHandler;
@@ -31,7 +30,7 @@ public class BotService : IBotService
     {
         await _dataContext.ConfigureAsync();
 
-        var botUser = await _telegramClient.GetMeAsync(cancellationToken);
+        var botUser = await _telegramBotClientWrapper.GetMeAsync(cancellationToken);
         LogOnStartMessage(botUser);
 
         await _chatMessagesHandler.TryHandleUpdatesAsync(cancellationToken);
@@ -43,11 +42,11 @@ public class BotService : IBotService
 
     private void LogOnStartMessage(User user)
     {
-        Console.WriteLine($"[{_telegramClient.GetHashCode()}] Start listening for @{user.Username}.");
+        Console.WriteLine($"[{_telegramBotClientWrapper.GetHashCode()}] Start listening for @{user.Username}.");
     }
     
     private void LogOnFinishMessage(User user)
     {
-        Console.WriteLine($"[{_telegramClient.GetHashCode()}] Stop listening for @{user.Username}");
+        Console.WriteLine($"[{_telegramBotClientWrapper.GetHashCode()}] Stop listening for @{user.Username}");
     }
 }

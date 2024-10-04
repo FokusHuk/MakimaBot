@@ -1,6 +1,6 @@
 ﻿namespace MakimaBot.Model;
 
-public class DataContext
+public class DataContext : IDataContext
 {
     private readonly IBucketClient _bucketClient;
     public BotState State { get; private set; }

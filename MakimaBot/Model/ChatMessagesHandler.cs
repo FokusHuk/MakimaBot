@@ -6,17 +6,17 @@ namespace MakimaBot.Model;
 
 public class ChatMessagesHandler
 {
-    private readonly ITelegramBotClient _telegramBotClient;
-    private readonly DataContext _dataContext;
+    private readonly ITelegramBotClientWrapper _telegramBotClientWrapper;
+    private readonly IDataContext _dataContext;
     private readonly ProcessorsChainFactory _processorsChainFactory;
 
     private const int UpdateMessagesLimit = 25;
 
-    public ChatMessagesHandler(ITelegramBotClient telegramBotClient,
-                               DataContext dataContext, 
+    public ChatMessagesHandler(ITelegramBotClientWrapper  telegramBotClientWrapper,
+                               IDataContext dataContext, 
                                ProcessorsChainFactory processorsChainFactory)
     {
-        _telegramBotClient = telegramBotClient;
+        _telegramBotClientWrapper = telegramBotClientWrapper;
         _dataContext = dataContext;
         _processorsChainFactory = processorsChainFactory;
     }
@@ -39,7 +39,7 @@ public class ChatMessagesHandler
     private async Task HandleUpdatesAsync(CancellationToken cancellationToken)
     {
         var messagesOffset = 0;
-        var updates = await _telegramBotClient.GetUpdatesAsync(
+        var updates = await _telegramBotClientWrapper.GetUpdatesAsync(
             offset: messagesOffset,
             limit: UpdateMessagesLimit,
             cancellationToken: cancellationToken);
@@ -53,7 +53,7 @@ public class ChatMessagesHandler
         {
             await TryHandleMessagesAsync(update, cancellationToken);
             messagesOffset = update.Id + 1;
-            await _telegramBotClient.GetUpdatesAsync(offset: messagesOffset, cancellationToken: cancellationToken);
+            await _telegramBotClientWrapper.GetUpdatesAsync(offset: messagesOffset, cancellationToken: cancellationToken);
         }
     }
 

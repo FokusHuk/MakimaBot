@@ -1,20 +1,20 @@
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MakimaBot.Model.Processors;
 
 public class RandomPhraseProcessor : ChatMessageProcessorBase
 {
-    private ITelegramBotClient _telegramBotClient;
+    private ITelegramBotClientWrapper _telegramBotClientWrapper;
 
-    public RandomPhraseProcessor(DataContext dataContext,
-                                 ITelegramBotClient telegramBotClient)
-                                 : base(dataContext)
+    public RandomPhraseProcessor(
+        IDataContext dataContext,
+        ITelegramBotClientWrapper telegramBotClientWrapper)
+        : base(dataContext)
     {
-        _telegramBotClient = telegramBotClient;
+        _telegramBotClientWrapper = telegramBotClientWrapper;
     }
 
-    protected override  async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
         var chatState = _dataContext.GetChatStateById(chatId);
         
@@ -29,9 +29,9 @@ public class RandomPhraseProcessor : ChatMessageProcessorBase
                 "До вечера 🌙"
             };
 
-        await _telegramBotClient.SendTextMessageAsync(
-            chatState.ChatId,
-            reactions[new Random().Next(reactions.Length)],
+        await _telegramBotClientWrapper.SendTextMessageAsync(
+            chatId: chatState.ChatId,
+            text: reactions[new Random().Next(reactions.Length)],
             cancellationToken: cancellationToken);
     }
 

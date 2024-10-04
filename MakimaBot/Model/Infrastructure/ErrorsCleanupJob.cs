@@ -4,7 +4,7 @@ public class ErrorsCleanupJob : InfrastructureJob
 {
     public override string Name => $"{nameof(ErrorsCleanupJob)}";
 
-    public override async Task ExecuteAsync(DataContext dataContext)
+    public override async Task ExecuteAsync(IDataContext dataContext)
     {
         var currentDateTimeUtc = DateTime.UtcNow;
         var errorsCleanupThreshold = TimeSpan.FromHours(24);
