@@ -89,9 +89,7 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ChatEventsHandler>();
         services.AddSingleton<ChatMessagesHandler>();
 
-        // temporarily disable - cleaned up in daily report event now
-        //services.AddSingleton<InfrastructureJob, ErrorsCleanupJob>();
-        //services.AddSingleton<InfrastructureJob, UnknownChatMessagesCleanupJob>();
+        services.AddSingleton<InfrastructureJob, DailyBackupJob>();
 
         services.AddSingleton<InfrastructureJobsHandler>();
 
@@ -108,6 +106,7 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ITextDiffPrinter, ConsoleTextDiffPrinter>();
         
         services.AddSingleton<Migration, TestAddMigration>();
+        services.AddSingleton<Migration, AddDailyBackupJobStateMigration>();
 
 
         services.AddTransient<DailyActivityProcessor>();

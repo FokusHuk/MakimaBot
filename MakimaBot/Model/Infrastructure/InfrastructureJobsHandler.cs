@@ -35,7 +35,7 @@ public class InfrastructureJobsHandler
     {
         try
         {
-            await job.ExecuteAsync(_dataContext);
+            await job.ExecuteAsync();
         }
         catch (Exception e)
         {
