@@ -4,38 +4,35 @@ using Telegram.Bot.Types.Enums;
 
 namespace MakimaBot;
 
-public class TelegramBotClientWrapper : ITelegramBotClientWrapper
+public class TelegramBotClientWrapper(
+    ITelegramBotClient telegramBotClient) : ITelegramBotClientWrapper
 {
-    private readonly ITelegramBotClient _telegramBotClient;
+    public async Task<Chat> GetChatAsync(ChatId chatId, CancellationToken cancellationToken = default) =>
+        await telegramBotClient.GetChatAsync(chatId, cancellationToken);
 
-    public TelegramBotClientWrapper(ITelegramBotClient telegramBotClient)
-    {
-        _telegramBotClient = telegramBotClient;
-    }
-
-    public Task<Chat> GetChatAsync(ChatId chatId, CancellationToken cancellationToken = default) =>
-        _telegramBotClient.GetChatAsync(chatId, cancellationToken);
-
-    public Task<ChatMember> GetChatMemberAsync(ChatId chatId, long userId, CancellationToken cancellationToken = default) =>
-        _telegramBotClient.GetChatMemberAsync(chatId, userId, cancellationToken);
+    public async Task<ChatMember> GetChatMemberAsync(ChatId chatId, long userId, CancellationToken cancellationToken = default) =>
+        await telegramBotClient.GetChatMemberAsync(chatId, userId, cancellationToken);
     
-    public Task<User> GetMeAsync(CancellationToken cancellationToken = default) => 
-        _telegramBotClient.GetMeAsync(cancellationToken);
+    public async Task<User> GetMeAsync(CancellationToken cancellationToken = default) => 
+        await telegramBotClient.GetMeAsync(cancellationToken);
     
-    public Task<Update[]> GetUpdatesAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default) =>
-        _telegramBotClient.GetUpdatesAsync(offset, limit, cancellationToken: cancellationToken);
+    public async Task<Update[]> GetUpdatesAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default) =>
+        await telegramBotClient.GetUpdatesAsync(offset, limit, cancellationToken: cancellationToken);
 
-    public Task<Message> SendTextMessageAsync(ChatId chatId,
+    public async Task<Message> SendTextMessageAsync(ChatId chatId,
                                               string text,
                                               ParseMode? parseMode = null,
                                               int? replyToMessageId = null,
                                               CancellationToken cancellationToken = default)
     {
-        return _telegramBotClient.SendTextMessageAsync(
+        return await telegramBotClient.SendTextMessageAsync(
             chatId: chatId,
             text: text,
             parseMode: parseMode,
             replyToMessageId: replyToMessageId,
             cancellationToken: cancellationToken);
     }
+
+    public async Task SendDocumentAsync(ChatId chatId, InputFile file) =>
+        await telegramBotClient.SendDocumentAsync(chatId, file);
 }
