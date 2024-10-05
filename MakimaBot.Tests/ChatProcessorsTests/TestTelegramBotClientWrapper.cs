@@ -37,4 +37,9 @@ public class TestTelegramBotClientWrapper : ITelegramBotClientWrapper
         SentMessage.Text = text;
         return Task.FromResult(SentMessage);
     }
+
+    public Task SendDocumentAsync(ChatId chatId, InputFile file)
+    {
+        throw new NotImplementedException();
+    }
 }
