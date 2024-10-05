@@ -9,4 +9,7 @@ public  class InfrastructureState
 
     [JsonPropertyName("unknownChatMessages")]
     public required ICollection<UnknownChatMessage> UnknownChatsMessages { get; set; }
+
+    [JsonPropertyName("dailyBackupJobState")]
+    public required DailyBackupJobState DailyBackupJobState { get; set; }
 }

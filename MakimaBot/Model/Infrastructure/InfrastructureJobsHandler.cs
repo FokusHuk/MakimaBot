@@ -1,23 +1,14 @@
 ﻿namespace MakimaBot.Model.Infrastructure;
 
-public class InfrastructureJobsHandler
-{
-    private readonly IEnumerable<InfrastructureJob> _jobs;
-    private readonly IDataContext _dataContext;
-
-    public InfrastructureJobsHandler(
-        IEnumerable<InfrastructureJob> jobs,
-        IDataContext dataContext)
-    {
-        _jobs = jobs;
-        _dataContext = dataContext;
-    }
-    
+public class InfrastructureJobsHandler(
+    IEnumerable<InfrastructureJob> jobs,
+    IDataContext dataContext)
+{   
     public async Task TryHandleJobsAsync(CancellationToken cancellationToken)
     {
         try
         {
-            foreach (var job in _jobs)
+            foreach (var job in jobs)
             {
                 await TryExecuteJobAsync(job);
             }
@@ -26,8 +17,8 @@ public class InfrastructureJobsHandler
         {
             var errorMessage = $"An error occured while handling infrastructure jobs: {e.Message}";
             Console.WriteLine(errorMessage);
-            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
-            await _dataContext.SaveChangesAsync();
+            dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await dataContext.SaveChangesAsync();
         }
     }
 
@@ -35,14 +26,14 @@ public class InfrastructureJobsHandler
     {
         try
         {
-            await job.ExecuteAsync(_dataContext);
+            await job.ExecuteAsync();
         }
         catch (Exception e)
         {
             var errorMessage = $"An error occured while executing {job.Name}: {e.Message}";
             Console.WriteLine();
-            _dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
-            await _dataContext.SaveChangesAsync();
+            dataContext.AddOrUpdateError(DateTime.UtcNow, errorMessage);
+            await dataContext.SaveChangesAsync();
         }
     }
 }

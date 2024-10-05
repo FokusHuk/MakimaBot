@@ -1,6 +1,5 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace MakimaBot;
 
@@ -23,4 +22,6 @@ public interface ITelegramBotClientWrapper
     Task<Chat> GetChatAsync(ChatId chatId, CancellationToken cancellationToken = default);
 
     Task<ChatMember> GetChatMemberAsync(ChatId chatId, long userId, CancellationToken cancellationToken = default);  
+
+    Task SendDocumentAsync(ChatId chatId, InputFile file);
 }
