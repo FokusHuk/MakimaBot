@@ -4,14 +4,14 @@ public class ProcessorComponent
 {
     public ProcessorComponent(
         DailyActivityProcessor dailyActivityProcessor, 
-        ChatCommandProcessor gptMessageProcessor, 
+        ChatCommandProcessor chatCommandProcessor, 
         HealthCheackProcessor healthCheackProcessor, 
         RandomPhraseProcessor randomPhraseProcessor, 
         TrustedChatProcessor trustedChatProcessor, 
         UntrustedChatProcessor untrustedChatProcessor)
     {
         DailyActivityProcessor = dailyActivityProcessor;
-        GptMessageProcessor = gptMessageProcessor;
+        ChatCommandProcessor = chatCommandProcessor;
         HealthCheackProcessor = healthCheackProcessor;
         RandomPhraseProcessor = randomPhraseProcessor;
         TrustedChatProcessor = trustedChatProcessor;
@@ -19,7 +19,7 @@ public class ProcessorComponent
     }
 
     public DailyActivityProcessor DailyActivityProcessor { get; }
-    public ChatCommandProcessor GptMessageProcessor { get; }
+    public ChatCommandProcessor ChatCommandProcessor { get; }
     public HealthCheackProcessor HealthCheackProcessor { get; }
     public RandomPhraseProcessor RandomPhraseProcessor { get; }
     public TrustedChatProcessor TrustedChatProcessor { get; }
