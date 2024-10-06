@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MakimaBot.Model.Processors;
 using MakimaBot;
+using MakimaBot.Model.ChatCommands;
 
 public class Startup(IConfiguration configuration)
 {
@@ -99,6 +100,7 @@ public class Startup(IConfiguration configuration)
 
         services.AddSingleton<IChatCommandHandler, ChatCommandHandler>();
         services.AddSingleton<ChatCommand, GptChatCommand>();
+        services.AddSingleton<ChatCommand, ListChatCommand>();
         services.AddSingleton<IGptClient, GptClient>();
 
         services.AddSingleton<BotStateUpdater>();
