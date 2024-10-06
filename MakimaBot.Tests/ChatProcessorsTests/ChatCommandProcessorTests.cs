@@ -35,9 +35,12 @@ public class ChatCommandProcessorTests
     public async Task ProcessChainAsync_RightRequest_ExecuteChatCommandHandler()
     {
         var message = new Message().WithText("@makima_daily_bot  command random   Parameter  ");
-        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramBotClientWrapper: null);
+        var chatCommandProcessor = new ChatCommandProcessor(
+            _dataContext.Object, 
+            _chatCommandHandler.Object, 
+            telegramBotClientWrapper: null);
 
-        await gptMessageProcessor.ProcessChainAsync(message, 0, CancellationToken.None);
+        await chatCommandProcessor.ProcessChainAsync(message, 0, CancellationToken.None);
 
         _dataContext.Verify(x => x.GetChatStateById(0), Times.Once());
         _chatCommandHandler.Verify(x => x.HandleAsync(
@@ -49,16 +52,19 @@ public class ChatCommandProcessorTests
     }
 
     [TestMethod]
-    [DataRow("@makiNO_daily_boD  gpt random   Promt  ")]
-    [DataRow("Makima @makima_daily_bot gpt random   Promt  ")]
+    [DataRow("@makiNO_daily_boD  command random   parameters  ")]
+    [DataRow("Makima @makima_daily_bot command random   parameters  ")]
     [DataRow("")]
     [DataRow(null)]
     public async Task ProcessChainAsync_WrongRequest_DoNothing(string text)
     {
         var message = new Message().WithText(text);
-        var gptMessageProcessor = new ChatCommandProcessor(_dataContext.Object, _chatCommandHandler.Object, telegramBotClientWrapper: null);
+        var chatCommandProcessor = new ChatCommandProcessor(
+            _dataContext.Object, 
+            _chatCommandHandler.Object, 
+            telegramBotClientWrapper: null);
 
-        await gptMessageProcessor.ProcessChainAsync(message, 0, CancellationToken.None);
+        await chatCommandProcessor.ProcessChainAsync(message, 0, CancellationToken.None);
 
         _dataContext.Verify(x => x.GetChatStateById(0), Times.Never());
         _chatCommandHandler.Verify(x => x.HandleAsync(

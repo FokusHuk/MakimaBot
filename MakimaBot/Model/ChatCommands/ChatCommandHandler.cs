@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace MakimaBot.Model;
 
@@ -13,14 +14,11 @@ public class ChatCommandHandler : IChatCommandHandler
     }
 
     private const string CommandPattern = @"^@makima_daily_bot\s+([a-z]*)\s*(.*)$";
-
-    private string GetGptChatError(string commandError = "")
-    {
-        return $"""
-        @makima\_daily\_bot это команда! {commandError}
+    private const string CommandError =
+        $"""
+        @makima\_daily\_bot это команда!
         Запросите список доступных команд ( `@makima_daily_bot list` )
         """;
-    }
 
     public async Task HandleAsync(
         Message message,
@@ -34,9 +32,9 @@ public class ChatCommandHandler : IChatCommandHandler
         {
             await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                GetGptChatError(),
+                CommandError,
                 replyToMessageId: message.MessageId,
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -47,9 +45,9 @@ public class ChatCommandHandler : IChatCommandHandler
         {
             await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                GetGptChatError($"Команда <**{receivedCommandName.Trim()}**> не распознана!"),
+                CommandError,
                 replyToMessageId: message.MessageId,
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
