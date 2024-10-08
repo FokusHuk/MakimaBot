@@ -6,17 +6,12 @@ namespace MakimaBot.Tests.ChatCommandHandlerTests;
 [TestClass]
 public class ChatCommandHandlerTests
 {
-    private readonly List<ChatCommand> _chatCommands =
-        new List<ChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
-
     private TestTelegramBotClientWrapper _telegramBotClientWrapper;
-    private ChatCommandHandler _chatCommandHandler;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _telegramBotClientWrapper = new TestTelegramBotClientWrapper();
-        _chatCommandHandler = new ChatCommandHandler(_chatCommands);
     }
 
     [TestMethod]
@@ -29,14 +24,16 @@ public class ChatCommandHandlerTests
     [DataRow("Макима @makima_daily_bot hello!")]
     public async Task HandleAsync_MentionOnly_SendUserError(string text)
     {
+        var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
+        var chatCommandHandler = new ChatCommandHandler(chatCommands);
         var message = new Message().WithText(text);
 
-        await _chatCommandHandler.HandleAsync(
+        await chatCommandHandler.HandleAsync(
             message,
             new TestChatStateBuilder().Build(),
             _telegramBotClientWrapper, CancellationToken.None);
 
-        Assert.IsTrue(_chatCommands.All(x => (x as TestChatCommand).ExecutionCount == 0));
+        Assert.IsTrue(chatCommands.All(command => command.ExecutionCount == 0));
         Assert.AreEqual(
             """
             @makima\_daily\_bot это команда!
@@ -48,14 +45,16 @@ public class ChatCommandHandlerTests
     [TestMethod]
     public async Task HandleAsync_UnknownCommand_SendUserError()
     {
+        var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
+        var chatCommandHandler = new ChatCommandHandler(chatCommands);
         var message = new Message().WithText("@makima_daily_bot unknownCommand");
 
-        await _chatCommandHandler.HandleAsync(
+        await chatCommandHandler.HandleAsync(
             message,
             new TestChatStateBuilder().Build(),
              _telegramBotClientWrapper, CancellationToken.None);
 
-        Assert.IsTrue(_chatCommands.All(x => (x as TestChatCommand).ExecutionCount == 0));
+        Assert.IsTrue(chatCommands.All(command => command.ExecutionCount == 0));
         Assert.AreEqual(
             """
             @makima\_daily\_bot это команда!
@@ -73,9 +72,11 @@ public class ChatCommandHandlerTests
     [DataRow("@makima_daily_bot secondCommand    привет мир")]
     public async Task HandleAsync_TestSecondCommand_ExecuteSecondCommand(string text)
     {
+        var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
+        var chatCommandHandler = new ChatCommandHandler(chatCommands);
         var message = new Message().WithText(text);
 
-        await _chatCommandHandler.HandleAsync(
+        await chatCommandHandler.HandleAsync(
             message,
             new TestChatStateBuilder().Build(),
             _telegramBotClientWrapper, CancellationToken.None);
@@ -83,15 +84,17 @@ public class ChatCommandHandlerTests
         Assert.AreEqual(null, _telegramBotClientWrapper.SentMessage);
         CollectionAssert.AreEqual(
             new[] { 0, 1 },
-            _chatCommands.Select(x => (x as TestChatCommand).ExecutionCount).ToArray());
+            chatCommands.Select(command => command.ExecutionCount).ToArray());
     }
 
     [TestMethod]
     public async Task HandleAsync_FirstCommand_ExecuteFirstCommand()
     {
+        var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
+        var chatCommandHandler = new ChatCommandHandler(chatCommands);
         var message = new Message().WithText("@makima_daily_bot firstCommand parameters параметры");
 
-        await _chatCommandHandler.HandleAsync(
+        await chatCommandHandler.HandleAsync(
             message,
             new TestChatStateBuilder().Build(),
             _telegramBotClientWrapper, CancellationToken.None);
@@ -99,7 +102,7 @@ public class ChatCommandHandlerTests
         Assert.AreEqual(null, _telegramBotClientWrapper.SentMessage);
         CollectionAssert.AreEqual(
             new[] { 1, 0 },
-            _chatCommands.Select(x => (x as TestChatCommand).ExecutionCount).ToArray());
+            chatCommands.Select(command => command.ExecutionCount).ToArray());
     }
 }
 
