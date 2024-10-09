@@ -17,7 +17,7 @@ public class DataContext : IDataContext
 
     public async Task<bool> SaveChangesAsync()
     {
-        return await _bucketClient.TryUpdateState(State);
+        return await _bucketClient.TryUpdateStateAsync(State);
     }
 
     public IEnumerable<BotError> GetAllErrors()

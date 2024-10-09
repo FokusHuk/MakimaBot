@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace MakimaBot.Model;
 
@@ -12,7 +13,12 @@ public class ChatCommandHandler : IChatCommandHandler
         _commands = commands;
     }
 
-    private const string CommandPattern = @"^@makima_daily_bot\s*([a-z]*)\s*(.*)$";
+    private const string CommandPattern = @"^@makima_daily_bot\s+([a-z]*)\s*(.*)$";
+    private const string CommandError =
+        $"""
+        @makima\_daily\_bot это команда!
+        Запросите список доступных команд ( `@makima_daily_bot list` )
+        """;
 
     public async Task HandleAsync(
         Message message,
@@ -22,32 +28,31 @@ public class ChatCommandHandler : IChatCommandHandler
     {
         var match = Regex.Matches(message.Text, CommandPattern, RegexOptions.IgnoreCase);
 
-        var commandName = match.First().Groups[1].Value;
-        if (string.IsNullOrEmpty(commandName))
+        if (match.Count == 0 || string.IsNullOrEmpty(match.First().Groups[1].Value))
         {
             await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                @"@makima\_daily\_bot это команда! Запросите список доступных команд ( `@makima_daily_bot list` )",
+                CommandError,
                 replyToMessageId: message.MessageId,
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
 
-        var currentCommand = _commands.SingleOrDefault(command => command.Name == commandName);
+        var receivedCommandName = match.First().Groups[1].Value;
+        var currentCommand = _commands.SingleOrDefault(command => command.Name == receivedCommandName);
         if (currentCommand is null)
         {
             await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                $"Команда < **{commandName.Trim()}** >  не распознана🙍‍♀️ Запросите список доступных команд ( `@makima_daily_bot list` )",
+                CommandError,
                 replyToMessageId: message.MessageId,
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
 
         var rawParameters = match.First().Groups[2].Value;
-
         await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClientWrapper, cancellationToken); 
     }
 }

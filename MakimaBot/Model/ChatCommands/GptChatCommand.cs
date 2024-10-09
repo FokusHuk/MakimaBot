@@ -6,7 +6,7 @@ public class GptChatCommand : ChatCommand
 {
     private readonly IGptClient _gptClient;
 
-    public override string Name { get; set; } = "gpt";
+    public override string Name { get; protected set; } = "gpt";
 
     public GptChatCommand(IGptClient gptClient)
     {

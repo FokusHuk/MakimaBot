@@ -12,7 +12,7 @@ public class DefaultProcessorsChainFactory : ProcessorsChainFactory
         return _component.HealthCheackProcessor
         .ChainedWith(_component.UntrustedChatProcessor)
         .EndChainWith(_component.TrustedChatProcessor
-            .SubchainedWith(_component.GptMessageProcessor
+            .SubchainedWith(_component.ChatCommandProcessor
                 .ChainedWith(_component.DailyActivityProcessor)
                 .EndChainWith(_component.RandomPhraseProcessor)
             )
