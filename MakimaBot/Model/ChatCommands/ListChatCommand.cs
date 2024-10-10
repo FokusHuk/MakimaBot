@@ -4,7 +4,7 @@ namespace MakimaBot.Model.ChatCommands;
 
 public class ListChatCommand : ChatCommand
 {
-    public override string Name { get; set; } = "list";
+    public override string Name { get; protected set; } = "list";
 
     private readonly IEnumerable<string> _commands = new string[] { "list", "gpt"};
 

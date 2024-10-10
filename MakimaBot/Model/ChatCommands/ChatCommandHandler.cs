@@ -39,18 +39,18 @@ public class ChatCommandHandler : IChatCommandHandler
             return;
         }
         
-        var receivedCommandName = match.First().Groups[1].Value;
         if(!chatState.UsersState.ContainsKey(message.From.Id))
         {
             await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
                 @"Вы не можете использовать команды, так как у вас еще нет роли.",
                 replyToMessageId: message.MessageId,
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }
 
+        var receivedCommandName = match.First().Groups[1].Value;
         var currentCommand = _commands.SingleOrDefault(command => command.Name == receivedCommandName);
         if (currentCommand is null)
         {
@@ -63,14 +63,14 @@ public class ChatCommandHandler : IChatCommandHandler
             return;
         }
 
-        var user = chatState.UsersState[message.From.Id];
-        if (!user.UserRole.AllowedCommands.Contains(commandName))
+        var userState = chatState.UsersState[message.From.Id]; // ToDo: В dataContext вынести
+        if (!userState.UserRole.AllowedCommands.Contains(currentCommand.Name))
         {
             await _telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                $"Вы не можете использовать эту команду, пока ваша роль: ${user.UserRole.RoleName}!",
+                $"Вы не можете использовать эту команду, пока ваша роль: {userState.UserRole.RoleName}!",
                 replyToMessageId: message.MessageId,
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
             return;
         }

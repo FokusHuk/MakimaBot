@@ -4,7 +4,7 @@ namespace MakimaBot.Model.ChatCommands;
 
 public class DisallowedCommand : ChatCommand
 {
-    public override string Name { get; set; } = "disallowedCommand";
+    public override string Name { get; protected set; } = "disallowedCommand";
 
     public override async Task ExecuteAsync(Message message, ChatState chatState, string rawParameters, ITelegramBotClientWrapper telegramBotClientWrapper, CancellationToken cancellationToken)
     {
