@@ -4,5 +4,5 @@ public interface IBucketClient
 {
     Task<string> LoadRawStateAsync();
     Task<BotState> LoadStateAsync();
-    Task<bool> TryUpdateState(BotState state);
+    Task<bool> TryUpdateStateAsync(BotState state);
 }

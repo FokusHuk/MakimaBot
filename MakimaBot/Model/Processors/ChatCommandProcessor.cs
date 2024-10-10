@@ -25,7 +25,7 @@ public class ChatCommandProcessor : ChatMessageProcessorBase
 
     protected override bool ShouldLaunchAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
-        return !string.IsNullOrWhiteSpace(message.Text)
+        return !string.IsNullOrWhiteSpace(message.Text) 
                && message.Text.Trim().StartsWith("@makima_daily_bot")
                && message.ForwardDate is null;
     }

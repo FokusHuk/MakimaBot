@@ -17,6 +17,6 @@ public class BotStateUpdater : StateUpdaterBase<BotState>
     {
          state.StateVersion = newStateVersion;
 
-        return await _bucketClient.TryUpdateState(state);
+        return await _bucketClient.TryUpdateStateAsync(state);
     }
 }

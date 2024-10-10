@@ -4,7 +4,7 @@ namespace MakimaBot.Model;
 
 public abstract class ChatCommand
 {
-    public abstract string Name { get; set;}
+    public abstract string Name { get; protected set; }
 
     public abstract Task ExecuteAsync(
         Message message,

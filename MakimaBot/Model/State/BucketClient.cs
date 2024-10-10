@@ -38,11 +38,11 @@ public class BucketClient : IBucketClient
         return JsonSerializer.Deserialize<BotState>(state);
     }
 
-    public async Task<bool> TryUpdateState(BotState state)
+    public async Task<bool> TryUpdateStateAsync(BotState state)
     {
         try
         {
-            await UpdateState(state);
+            await UpdateStateAsync(state);
             return true;
         }
         catch (Exception ex)
@@ -52,7 +52,7 @@ public class BucketClient : IBucketClient
         }
     }
 
-    private async Task UpdateState(BotState state)
+    private async Task UpdateStateAsync(BotState state)
     {
         var content = JsonSerializer.Serialize(state);
         
