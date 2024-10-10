@@ -6,12 +6,7 @@ public class ListChatCommand : ChatCommand
 {
     public override string Name { get; set; } = "list";
 
-    private readonly IEnumerable<ChatCommand> _commands;
-
-    public ListChatCommand(IEnumerable<ChatCommand> commands)
-    {
-        _commands = commands;
-    }
+    private readonly IEnumerable<string> _commands = new string[] { "list", "gpt"};
 
     public override async Task ExecuteAsync(
         Message message, 
@@ -22,7 +17,7 @@ public class ListChatCommand : ChatCommand
     {
         await telegramBotClientWrapper.SendTextMessageAsync(
             chatId: chatState.ChatId,
-            string.Join("\n", _commands.Select(x => x.Name)),
+            string.Join("\n", _commands),
             replyToMessageId: message.MessageId,
             cancellationToken: cancellationToken
         );

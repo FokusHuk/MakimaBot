@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using MakimaBot.Model.Processors;
 using MakimaBot;
 using MakimaBot.Model.ChatCommands;
+using MakimaBot.Model.StateUpdater.Migrations;
 
 public class Startup(IConfiguration configuration)
 {
@@ -101,6 +102,7 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<IChatCommandHandler, ChatCommandHandler>();
         services.AddSingleton<ChatCommand, GptChatCommand>();
         services.AddSingleton<ChatCommand, ListChatCommand>();
+        services.AddSingleton<ChatCommand, DisallowedCommand>();
         services.AddSingleton<IGptClient, GptClient>();
 
         services.AddSingleton<BotStateUpdater>();
@@ -109,6 +111,7 @@ public class Startup(IConfiguration configuration)
         
         services.AddSingleton<Migration, TestAddMigration>();
         services.AddSingleton<Migration, AddDailyBackupJobStateMigration>();
+        services.AddSingleton<Migration, AddUserStateAndRolesMigration>();
 
 
         services.AddTransient<DailyActivityProcessor>();

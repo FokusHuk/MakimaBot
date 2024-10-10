@@ -32,7 +32,8 @@ public class TestChatStateBuilder
         {
             ChatId = _chatId ?? TestUniqueValueProvider.GetNextLong(),
             Name = _name ?? TestUniqueValueProvider.GetNextString("chat_name"),
-            EventsState = _eventsState ?? new TestEventsStateBuilder().Build()
+            EventsState = _eventsState ?? new TestEventsStateBuilder().Build(),
+            UsersState = new Dictionary<long, UserState>()
         };
     }
 }

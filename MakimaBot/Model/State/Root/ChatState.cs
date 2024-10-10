@@ -12,4 +12,7 @@ public  class ChatState
 
     [JsonPropertyName("eventsState")]
     public required EventsState EventsState { get; set; }
+
+    [JsonPropertyName("usersState")]
+    public  Dictionary<long, UserState> UsersState { get; set; }
 }

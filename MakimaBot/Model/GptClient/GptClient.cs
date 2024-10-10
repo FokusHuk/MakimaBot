@@ -11,7 +11,8 @@ public class GptClient : IGptClient
 
     private readonly IOptions<GptOptions> _gptOptions;
 
-    private const string DefaultRole = " Тебя зовут Макима. Ты добрая и общительная девушка. Ты мой собеседник. Поддерживай разговор";
+    private const int MaxTokens= 250;
+    private readonly string DefaultRole = $"Тебя зовут Макима. Ты добрая и общительная девушка. Ты мой собеседник. Поддерживай разговор.";
 
     public GptClient(IHttpClientFactory httpClientFactory, IOptions<GptOptions> gptOptions)
     {
@@ -29,8 +30,8 @@ public class GptClient : IGptClient
             CompletionOptions = new GptTextCompletionOptions
             {
                 Stream = false,
-                Temperature = 0.7,
-                MaxTokens = 100
+                Temperature = 0.4,
+                MaxTokens = MaxTokens
             },
             Messages = new List<GptTextCompletionRequestMessage>()
             {

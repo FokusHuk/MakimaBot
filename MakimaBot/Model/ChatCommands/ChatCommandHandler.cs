@@ -33,6 +33,17 @@ public class ChatCommandHandler : IChatCommandHandler
                 cancellationToken: cancellationToken);
             return;
         }
+        
+        if(!chatState.UsersState.ContainsKey(message.From.Id))
+        {
+            await _telegramBotClientWrapper.SendTextMessageAsync(
+                chatState.ChatId,
+                @"Вы не можете использовать команды, так как у вас еще нет роли.",
+                replyToMessageId: message.MessageId,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                cancellationToken: cancellationToken);
+            return;
+        }
 
         var currentCommand = _commands.SingleOrDefault(command => command.Name == commandName);
         if (currentCommand is null)
@@ -46,8 +57,20 @@ public class ChatCommandHandler : IChatCommandHandler
             return;
         }
 
+        var user = chatState.UsersState[message.From.Id];
+        if (!user.UserRole.AllowedCommands.Contains(commandName))
+        {
+            await _telegramBotClientWrapper.SendTextMessageAsync(
+                chatState.ChatId,
+                $"Вы не можете использовать эту команду, пока ваша роль: ${user.UserRole.RoleName}!",
+                replyToMessageId: message.MessageId,
+                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown,
+                cancellationToken: cancellationToken);
+            return;
+        }
+
         var rawParameters = match.First().Groups[2].Value;
 
-        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClientWrapper, cancellationToken); 
+        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClientWrapper, cancellationToken);
     }
 }
