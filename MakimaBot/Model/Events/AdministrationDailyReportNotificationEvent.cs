@@ -34,20 +34,18 @@ public class AdministrationDailyReportNotificationEvent : IChatEvent
         {
             await telegramBotClientWrapper.SendTextMessageAsync(
                 chat.ChatId,
-                TrimTelegramMessage(errorsReport),
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                TrimTelegramMessage(errorsReport));
 
-            _dataContext.UpdateErrors(Array.Empty<BotError>());
+            _dataContext.FlushErrors();
         }
 
         if (!string.IsNullOrWhiteSpace(unknownMessagesReport))
         {
             await telegramBotClientWrapper.SendTextMessageAsync(
                 chat.ChatId,
-                TrimTelegramMessage(unknownMessagesReport),
-                parseMode: Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                TrimTelegramMessage(unknownMessagesReport));
 
-            _dataContext.UpdateUnknownChatMessages(Array.Empty<UnknownChatMessage>());
+            _dataContext.FlushUnknownChatMessages();
         }
 
         if(string.IsNullOrWhiteSpace(unknownMessagesReport) && string.IsNullOrWhiteSpace(errorsReport))
