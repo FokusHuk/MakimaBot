@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Amazon.S3;
 using MakimaBot.Model;
 using MakimaBot.Model.Config;
@@ -49,27 +48,39 @@ public class Startup(IConfiguration configuration)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-
-        services.AddSingleton<IBucketClient, BucketClient>(provider =>
+        using (var serviceProvider = services.BuildServiceProvider())
         {
-            var bucketOptions = provider.GetRequiredService<IOptions<BucketOptions>>().Value;
+            var bucketOptions = serviceProvider.GetRequiredService<IOptions<BucketOptions>>().Value;
 
-            var s3Config = new AmazonS3Config
+            if (bucketOptions.UseLocalState)
             {
-                ServiceURL = bucketOptions.ServiceUrl,
-                ForcePathStyle = true
-            };
-                
-            var s3Client = new AmazonS3Client(
-                bucketOptions.AccessKeyId,
-                bucketOptions.SecretAccessKey,
-                s3Config);
+                services.AddSingleton<IBucketClient, LocalBucketClient>(provider =>
+                {
+                    return new LocalBucketClient(bucketOptions.PathToLocalState);
+                });
+            }
+            else
+            {
+                services.AddSingleton<IBucketClient, BucketClient>(provider =>
+                {
+                    var s3Config = new AmazonS3Config
+                    {
+                        ServiceURL = bucketOptions.ServiceUrl,
+                        ForcePathStyle = true
+                    };
 
-            return new BucketClient(
-                s3Client,
-                bucketOptions.BucketName,
-                bucketOptions.StateFileName);
-        });
+                    var s3Client = new AmazonS3Client(
+                        bucketOptions.AccessKeyId,
+                        bucketOptions.SecretAccessKey,
+                        s3Config);
+
+                    return new BucketClient(
+                        s3Client,
+                        bucketOptions.BucketName,
+                        bucketOptions.StateFileName);
+                });
+            }
+        }
 
         services.AddSingleton<IDataContext, DataContext>();
 
