@@ -6,7 +6,6 @@ public class TestEventsStateBuilder
 {
     private MorningMessageEventState? _morningMessage = null;
     private ActivityStatisticsEventState? _activityStatistics = null;
-    private DailyReportNotificationEventState? _dailyReportNotification = null;
     private AppVersionNotificationEventState? _appVersionNotification = null;
     private EveningMessageEventState? _eveningMessage = null;
 
@@ -19,12 +18,6 @@ public class TestEventsStateBuilder
     public TestEventsStateBuilder WithActivityStatisticsEventState(ActivityStatisticsEventState activityStatistics)
     {
         _activityStatistics = activityStatistics;
-        return this;
-    }
-
-    public TestEventsStateBuilder WithDailyReportNotificationEventState(DailyReportNotificationEventState dailyReportNotification)
-    {
-        _dailyReportNotification = dailyReportNotification;
         return this;
     }
 
@@ -46,7 +39,6 @@ public class TestEventsStateBuilder
         {
             MorningMessage = _morningMessage ?? CreateMorningMessageEventState(),
             ActivityStatistics = _activityStatistics ?? CreateActivityStatisticsEventState(),
-            DailyReportNotification = _dailyReportNotification ?? CreateDailyReportNotificationEventState(),
             AppVersionNotification = _appVersionNotification ?? CreateAppVersionNotificationEventState(),
             EveningMessage = _eveningMessage ?? CreateEveningMessageEventState()
         };
@@ -64,12 +56,6 @@ public class TestEventsStateBuilder
         IsEnabled = false,
         LastTimeStampUtc = DateTime.UtcNow,
         Statistics = []
-    };
-
-    private DailyReportNotificationEventState CreateDailyReportNotificationEventState() => new()
-    {
-        IsEnabled = false,
-        LastTimeStampUtc = DateTime.UtcNow
     };
 
     private AppVersionNotificationEventState CreateAppVersionNotificationEventState() => new()

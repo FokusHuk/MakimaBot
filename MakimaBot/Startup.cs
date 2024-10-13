@@ -83,13 +83,15 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<IChatEvent, MorningMessageEvent>();
         services.AddSingleton<IChatEvent, EveningMessageEvent>();
         services.AddSingleton<IChatEvent, ActivityStatisticsEvent>();
-        services.AddSingleton<IChatEvent, AdministrationDailyReportNotificationEvent>();
         services.AddSingleton<IChatEvent, AppVersionNotificationEvent>();
 
         services.AddSingleton<ChatEventsHandler>();
         services.AddSingleton<ChatMessagesHandler>();
 
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
         services.AddSingleton<InfrastructureJob, DailyBackupJob>();
+        services.AddSingleton<InfrastructureJob, BotNotificationsJob>();
 
         services.AddSingleton<InfrastructureJobsHandler>();
 
@@ -107,6 +109,7 @@ public class Startup(IConfiguration configuration)
         
         services.AddSingleton<Migration, TestAddMigration>();
         services.AddSingleton<Migration, AddDailyBackupJobStateMigration>();
+        services.AddSingleton<Migration, ConfigureNotificationsMigration>();
 
 
         services.AddTransient<DailyActivityProcessor>();
