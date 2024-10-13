@@ -11,5 +11,11 @@ public  class InfrastructureState
     public required ICollection<UnknownChatMessage> UnknownChatsMessages { get; set; }
 
     [JsonPropertyName("dailyBackupJobState")]
-    public required DailyBackupJobState DailyBackupJobState { get; set; }
+    public required DailyBackupJobState? DailyBackupJobState { get; set; }
+    
+    [JsonPropertyName("serviceChats")]
+    public required ICollection<ServiceChat> ServiceChats { get; set; }
+    
+    [JsonPropertyName("notificationsChatSettings")]
+    public required NotificationsChatSettings? NotificationsChatSettings { get; set; }
 }

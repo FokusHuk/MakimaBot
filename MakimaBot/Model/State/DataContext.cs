@@ -25,9 +25,9 @@ public class DataContext : IDataContext
         return State.Infrastructure.Errors;
     }
 
-    public void FlushErrors()
+    public void UpdateErrors(ICollection<BotError> errors)
     {
-        State.Infrastructure.Errors.Clear();
+        State.Infrastructure.Errors = errors;
     }
     
     public void AddOrUpdateError(DateTime creationDateTimeUtc, string errorMessage)
@@ -78,9 +78,9 @@ public class DataContext : IDataContext
         return State.Infrastructure.UnknownChatsMessages;
     }
 
-    public void FlushUnknownChatMessages()
+    public void UpdateUnknownChatMessages(ICollection<UnknownChatMessage> unknownChatMessages)
     {
-        State.Infrastructure.UnknownChatsMessages.Clear();
+        State.Infrastructure.UnknownChatsMessages = unknownChatMessages;
     }
 
     public void AddUnknownMessage(DateTime sentDateTimeUtc, long chatId, string? message, string? username)

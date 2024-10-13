@@ -1,6 +1,11 @@
 {
     "changelogs": [
         {
+            "id": 14,
+            "version": "2.2.1",
+            "description": "- Observability"
+        },
+        {
             "id": 13,
             "version": "2.1.1",
             "description": "- Макима теперь лучше понимает команды! Да и мы тоже чему-то научились..."
