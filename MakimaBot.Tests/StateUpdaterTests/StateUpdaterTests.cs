@@ -266,13 +266,13 @@ public class StateUpdaterTests
 
     private TestStateUpdater CreateStateUpdater(string jsonState, IEnumerable<Migration> migrations, bool updateStateResult = true)
     {
-        var bucketClientMock = new Mock<IBucketClient>();
-        bucketClientMock
+        var stateClientMock = new Mock<IStateClient>();
+        stateClientMock
             .Setup(x => x.LoadRawStateAsync())
             .ReturnsAsync(jsonState);
 
         return new TestStateUpdater(
-            bucketClientMock.Object,
+            stateClientMock.Object,
             _textDiffPrinter,
             migrations,
             updateStateResult);

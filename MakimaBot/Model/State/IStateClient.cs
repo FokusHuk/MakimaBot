@@ -1,6 +1,6 @@
 namespace MakimaBot.Model;
 
-public interface IBucketClient
+public interface IStateClient
 {
     Task<string> LoadRawStateAsync();
     Task<BotState> LoadStateAsync();

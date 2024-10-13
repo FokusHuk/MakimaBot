@@ -6,10 +6,8 @@ public class BucketOptions
 {
     public static readonly string SectionName = "bucketConfig";
 
-    [Required]
     public bool UseLocalState { get; init; }
 
-    [Required]
     public string PathToLocalState { get; init; }
 
     [Required]

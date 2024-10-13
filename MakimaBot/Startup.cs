@@ -71,28 +71,7 @@ public class Startup(IConfiguration configuration)
 
     private void ConfigureCore(IServiceCollection services)
     {
-        services.AddSingleton<IBucketClient, BucketClient>(provider =>
-        {
-            var bucketOptions = provider.GetRequiredService<IOptions<BucketOptions>>().Value;
-
-            var s3Config = new AmazonS3Config
-            {
-                ServiceURL = bucketOptions.ServiceUrl,
-                ForcePathStyle = true
-            };
-
-            var s3Client = new AmazonS3Client(
-                bucketOptions.AccessKeyId,
-                bucketOptions.SecretAccessKey,
-                s3Config);
-
-                    return new BucketClient(
-                        s3Client,
-                        bucketOptions.BucketName,
-                        bucketOptions.StateFileName);
-                });
-            }
-        }
+        ConfigureStateClient(services);
 
         services.AddSingleton<IDataContext, DataContext>();
 
@@ -107,6 +86,53 @@ public class Startup(IConfiguration configuration)
 
         services.AddHttpClient();
         services.AddControllers();
+    }
+
+    private void ConfigureStateClient(IServiceCollection services)
+    {
+        using (var serviceProvider = services.BuildServiceProvider())
+        {
+            var bucketOptions = serviceProvider.GetRequiredService<IOptions<BucketOptions>>().Value;
+
+            if (bucketOptions.UseLocalState)
+            {
+                ConfigureLocalStateClient(services, bucketOptions);
+            }
+            else
+            {
+                ConfigureBucketClient(services, bucketOptions);
+            }
+        }
+    }
+
+    private void ConfigureBucketClient(IServiceCollection services, BucketOptions bucketOptions)
+    {
+        services.AddSingleton<IStateClient, BucketClient>(provider =>
+        {
+            var s3Config = new AmazonS3Config
+            {
+                ServiceURL = bucketOptions.ServiceUrl,
+                ForcePathStyle = true
+            };
+
+            var s3Client = new AmazonS3Client(
+                bucketOptions.AccessKeyId,
+                bucketOptions.SecretAccessKey,
+                s3Config);
+                
+            return new BucketClient(
+                s3Client,
+                bucketOptions.BucketName,
+                bucketOptions.StateFileName);
+        });
+    }
+
+    private void ConfigureLocalStateClient(IServiceCollection services, BucketOptions bucketOptions)
+    {
+        services.AddSingleton<IStateClient, LocalStateClient>(provider =>
+        {
+            return new LocalStateClient(bucketOptions.PathToLocalState);
+        });
     }
 
     private void ConfigureMessageProcessing(IServiceCollection services)

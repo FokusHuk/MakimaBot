@@ -1,21 +1,13 @@
-
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace MakimaBot.Model;
 
-public class LocalBucketClient : IBucketClient
+public class LocalStateClient(string pathToLocalStateFile) : IStateClient
 {
-    private readonly string _pathToFile;
-
-    public LocalBucketClient(string path)
-    {
-        _pathToFile = path;
-    }
-
     public async Task<string> LoadRawStateAsync()
     {
-        return await File.ReadAllTextAsync(_pathToFile);
+        return await File.ReadAllTextAsync(pathToLocalStateFile);
     }
 
     public async Task<BotState> LoadStateAsync()
@@ -49,6 +41,6 @@ public class LocalBucketClient : IBucketClient
             }
         );
 
-        await File.WriteAllTextAsync(_pathToFile, content);
+        await File.WriteAllTextAsync(pathToLocalStateFile, content);
     }
 }

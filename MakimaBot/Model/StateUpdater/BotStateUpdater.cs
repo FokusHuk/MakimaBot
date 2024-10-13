@@ -5,9 +5,9 @@ namespace MakimaBot.Model;
 public class BotStateUpdater : StateUpdaterBase<BotState>
 {
     public BotStateUpdater(
-        IBucketClient bucketClient,
+        IStateClient stateClient,
         ITextDiffPrinter textDiffPrinter,
-        IEnumerable<Migration> migrations) : base(bucketClient, textDiffPrinter, migrations)
+        IEnumerable<Migration> migrations) : base(stateClient, textDiffPrinter, migrations)
     {
     }
 
@@ -17,6 +17,6 @@ public class BotStateUpdater : StateUpdaterBase<BotState>
     {
          state.StateVersion = newStateVersion;
 
-        return await _bucketClient.TryUpdateStateAsync(state);
+        return await _stateClient.TryUpdateStateAsync(state);
     }
 }

@@ -5,23 +5,23 @@ namespace MakimaBot.Model;
 
 public abstract class StateUpdaterBase<T> where T : class
 {
-    protected readonly IBucketClient _bucketClient;
+    protected readonly IStateClient _stateClient;
     private readonly ITextDiffPrinter _textDiffPrinter;
     private readonly IEnumerable<Migration> _migrations;
 
     public StateUpdaterBase(
-        IBucketClient bucketClient,
+        IStateClient stateClient,
         ITextDiffPrinter textDiffPrinter,
         IEnumerable<Migration> migrations)
     {
-        _bucketClient = bucketClient;
+        _stateClient = stateClient;
         _textDiffPrinter = textDiffPrinter;
         _migrations = migrations;
     }
 
     public async Task EnsureUpdateAsync(CancellationToken cancellationToken)
     {
-        var jsonState = await _bucketClient.LoadRawStateAsync();
+        var jsonState = await _stateClient.LoadRawStateAsync();
         var jObjectState = JsonConvert.DeserializeObject<JObject>(jsonState);
         var stateBeforeMigration = jObjectState.ToString();
 

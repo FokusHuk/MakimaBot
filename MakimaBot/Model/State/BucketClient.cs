@@ -4,7 +4,7 @@ using Amazon.S3.Model;
 
 namespace MakimaBot.Model;
 
-public class BucketClient : IBucketClient
+public class BucketClient : IStateClient
 {
     private readonly AmazonS3Client _client;
     private readonly string _bucketName;
