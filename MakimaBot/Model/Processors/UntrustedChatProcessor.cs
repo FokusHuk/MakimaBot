@@ -11,6 +11,9 @@ public class UntrustedChatProcessor : ChatMessageProcessorBase
 
     protected override async Task ProcessAsync(Message message, long chatId, CancellationToken cancellationToken)
     {
+        if (_dataContext.State.Infrastructure.ServiceChats.Any(sc => sc.Id == chatId))
+            return;
+
         _dataContext.AddUnknownMessage(
             sentDateTimeUtc: DateTime.UtcNow,
             chatId: chatId,

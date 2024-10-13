@@ -6,7 +6,8 @@ namespace MakimaBot.Model.Infrastructure;
 
 public class DailyBackupJob(
     IDataContext dataContext,
-    ITelegramBotClientWrapper telegramBotClientWrapper) : InfrastructureJob
+    ITelegramBotClientWrapper telegramBotClientWrapper,
+    IDateTimeProvider dateTimeProvider) : InfrastructureJob
 {
     public override string Name => $"{nameof(DailyBackupJob)}";
 
@@ -15,26 +16,23 @@ public class DailyBackupJob(
 
     public override async Task ExecuteAsync()
     {
-        var state = dataContext.State;
-        var currentDateUtc = DateTime.UtcNow.Date;
+        var backupJobState = dataContext.State.Infrastructure.DailyBackupJobState;
+        var currentDateUtc = dateTimeProvider.UtcNow().Date;
 
-        var lastStartTimeStampUtc = dataContext.State.Infrastructure.DailyBackupJobState.LastTimeStampUtc;
-        if (currentDateUtc == lastStartTimeStampUtc.Date)
+        if (backupJobState is null || currentDateUtc == backupJobState.LastTimeStampUtc.Date)
             return;
 
-        var adminChat = state.Chats.First(c => c.Name == "akima_yooukie");
-
-        var jsonState = JsonSerializer.Serialize(state);
+        var jsonState = JsonSerializer.Serialize(dataContext.State);
         var jsonStateBytes = Encoding.UTF8.GetBytes(jsonState);
         var stream = new MemoryStream(jsonStateBytes);
 
         var backupFile = InputFile.FromStream(stream, GetBackupFileName(currentDateUtc));
 
-        await telegramBotClientWrapper.SendDocumentAsync(adminChat.ChatId, backupFile);
+        await telegramBotClientWrapper.SendDocumentAsync(backupJobState.TargetChatId, backupFile);
 
-        state.Infrastructure.DailyBackupJobState.LastTimeStampUtc = currentDateUtc;
+        backupJobState.LastTimeStampUtc = currentDateUtc;
         await dataContext.SaveChangesAsync();
     }
 
-    private string GetBackupFileName(DateTime currentDateUtc) => $"{BackupPrefix}-{currentDateUtc.ToShortDateString()}.{BackupFileType}";
+    private string GetBackupFileName(DateTime currentDateUtc) => $"{BackupPrefix}-{currentDateUtc:dd-MM-yyyy}.{BackupFileType}";
 }

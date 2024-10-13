@@ -18,6 +18,26 @@ public class Startup(IConfiguration configuration)
 
     public void ConfigureServices(IServiceCollection services)
     {
+        ConfigureOptions(services);
+        ConfigureCore(services);
+        ConfigureMessageProcessing(services);
+        ConfigureEvents(services);
+        ConfigureInfrastructure(services);
+        ConfigureMigrations(services);
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+
+    private void ConfigureOptions(IServiceCollection services)
+    {
         services
             .AddOptions<ApplicationOptions>()
             .Bind(_configuration)
@@ -47,32 +67,24 @@ public class Startup(IConfiguration configuration)
             .Bind(_configuration.GetSection(GptOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+    }
 
-        using (var serviceProvider = services.BuildServiceProvider())
+    private void ConfigureCore(IServiceCollection services)
+    {
+        services.AddSingleton<IBucketClient, BucketClient>(provider =>
         {
-            var bucketOptions = serviceProvider.GetRequiredService<IOptions<BucketOptions>>().Value;
+            var bucketOptions = provider.GetRequiredService<IOptions<BucketOptions>>().Value;
 
-            if (bucketOptions.UseLocalState)
+            var s3Config = new AmazonS3Config
             {
-                services.AddSingleton<IBucketClient, LocalBucketClient>(provider =>
-                {
-                    return new LocalBucketClient(bucketOptions.PathToLocalState);
-                });
-            }
-            else
-            {
-                services.AddSingleton<IBucketClient, BucketClient>(provider =>
-                {
-                    var s3Config = new AmazonS3Config
-                    {
-                        ServiceURL = bucketOptions.ServiceUrl,
-                        ForcePathStyle = true
-                    };
+                ServiceURL = bucketOptions.ServiceUrl,
+                ForcePathStyle = true
+            };
 
-                    var s3Client = new AmazonS3Client(
-                        bucketOptions.AccessKeyId,
-                        bucketOptions.SecretAccessKey,
-                        s3Config);
+            var s3Client = new AmazonS3Client(
+                bucketOptions.AccessKeyId,
+                bucketOptions.SecretAccessKey,
+                s3Config);
 
                     return new BucketClient(
                         s3Client,
@@ -91,35 +103,14 @@ public class Startup(IConfiguration configuration)
         });
         services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
 
-        services.AddSingleton<IChatEvent, MorningMessageEvent>();
-        services.AddSingleton<IChatEvent, EveningMessageEvent>();
-        services.AddSingleton<IChatEvent, ActivityStatisticsEvent>();
-        services.AddSingleton<IChatEvent, AdministrationDailyReportNotificationEvent>();
-        services.AddSingleton<IChatEvent, AppVersionNotificationEvent>();
-
-        services.AddSingleton<ChatEventsHandler>();
-        services.AddSingleton<ChatMessagesHandler>();
-
-        services.AddSingleton<InfrastructureJob, DailyBackupJob>();
-
-        services.AddSingleton<InfrastructureJobsHandler>();
-
         services.AddSingleton<IBotService, BotService>();
 
         services.AddHttpClient();
+        services.AddControllers();
+    }
 
-        services.AddSingleton<IChatCommandHandler, ChatCommandHandler>();
-        services.AddSingleton<ChatCommand, GptChatCommand>();
-        services.AddSingleton<IGptClient, GptClient>();
-
-        services.AddSingleton<BotStateUpdater>();
-        
-        services.AddSingleton<ITextDiffPrinter, ConsoleTextDiffPrinter>();
-        
-        services.AddSingleton<Migration, TestAddMigration>();
-        services.AddSingleton<Migration, AddDailyBackupJobStateMigration>();
-
-
+    private void ConfigureMessageProcessing(IServiceCollection services)
+    {
         services.AddTransient<DailyActivityProcessor>();
         services.AddTransient<ChatCommandProcessor>();
         services.AddTransient<HealthCheackProcessor>();
@@ -130,17 +121,42 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ProcessorComponent>();
         services.AddSingleton<ProcessorsChainFactory, DefaultProcessorsChainFactory>();
 
+        services.AddSingleton<ChatMessagesHandler>();
 
-        services.AddControllers();
+
+        services.AddSingleton<IGptClient, GptClient>();
+        services.AddSingleton<ChatCommand, GptChatCommand>();
+        services.AddSingleton<IChatCommandHandler, ChatCommandHandler>();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    private void ConfigureEvents(IServiceCollection services)
     {
-        app.UseRouting();
+        services.AddSingleton<IChatEvent, MorningMessageEvent>();
+        services.AddSingleton<IChatEvent, EveningMessageEvent>();
+        services.AddSingleton<IChatEvent, ActivityStatisticsEvent>();
+        services.AddSingleton<IChatEvent, AppVersionNotificationEvent>();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        services.AddSingleton<ChatEventsHandler>();
+    }
+
+    private void ConfigureInfrastructure(IServiceCollection services)
+    {
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        services.AddSingleton<InfrastructureJob, DailyBackupJob>();
+        services.AddSingleton<InfrastructureJob, BotNotificationsJob>();
+
+        services.AddSingleton<InfrastructureJobsHandler>();
+    }
+
+    private void ConfigureMigrations(IServiceCollection services)
+    {
+        services.AddSingleton<BotStateUpdater>();
+
+        services.AddSingleton<ITextDiffPrinter, ConsoleTextDiffPrinter>();
+
+        services.AddSingleton<Migration, TestAddMigration>();
+        services.AddSingleton<Migration, AddDailyBackupJobStateMigration>();
+        services.AddSingleton<Migration, ConfigureNotificationsMigration>();
     }
 }
