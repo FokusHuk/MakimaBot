@@ -17,7 +17,7 @@ public class BotNotificationsJob(
         count: {error.Count}
         """;
 
-    protected virtual string UnknownMessagesReportTitle { get; } = "Errors";
+    protected virtual string UnknownMessagesReportTitle { get; } = "UnknownMessages";
     protected virtual Func<UnknownChatMessage, string> UnknownMessageReportProvider { get; } = ucm => $"""
         -----
         chat id: {ucm.ChatId}
@@ -93,7 +93,7 @@ public class BotNotificationsJob(
         foreach (var entity in entities)
         {
             var entityReport = entityReportProvider(entity);
-            
+
             if (GetFullReport($"{report}\n{entityReport}").Length > MaxTelegramMessageLength)
             {
                 break;
