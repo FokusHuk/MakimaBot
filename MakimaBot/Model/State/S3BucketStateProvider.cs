@@ -4,13 +4,13 @@ using Amazon.S3.Model;
 
 namespace MakimaBot.Model;
 
-public class BucketClient : IBucketClient
+public class S3BucketStateProvider : IStateProvider
 {
     private readonly AmazonS3Client _client;
     private readonly string _bucketName;
     private readonly string _stateFileName;
 
-    public BucketClient(AmazonS3Client client, string bucketName, string stateFileName)
+    public S3BucketStateProvider(AmazonS3Client client, string bucketName, string stateFileName)
     {
         _client = client;
         _bucketName = bucketName;

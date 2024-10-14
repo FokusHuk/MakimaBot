@@ -1,23 +1,17 @@
 ﻿namespace MakimaBot.Model;
 
-public class DataContext : IDataContext
+public class DataContext(IStateProvider stateProvider) : IDataContext
 {
-    private readonly IBucketClient _bucketClient;
     public BotState State { get; private set; }
-
-    public DataContext(IBucketClient bucketClient)
-    {
-        _bucketClient = bucketClient;
-    }
 
     public async Task ConfigureAsync()
     {       
-        State = await _bucketClient.LoadStateAsync();
+        State = await stateProvider.LoadStateAsync();
     }
 
     public async Task<bool> SaveChangesAsync()
     {
-        return await _bucketClient.TryUpdateStateAsync(State);
+        return await stateProvider.TryUpdateStateAsync(State);
     }
 
     public IEnumerable<BotError> GetAllErrors()
