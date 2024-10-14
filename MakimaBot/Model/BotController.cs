@@ -5,7 +5,7 @@ namespace MakimaBot.Model;
 [ApiController]
 public class BotController(
     IBotService botService,
-    IStateClient stateClient,
+    IStateProvider stateProvider,
     BotStateUpdater stateUpdater,
     ITelegramBotClientWrapper telegramBotClientWrapper) : ControllerBase
 {
@@ -33,7 +33,7 @@ public class BotController(
     [Route("state")]
     public async Task<IActionResult> GetStateAsync(CancellationToken cancellationToken)
     {
-        var rawState = await stateClient.LoadRawStateAsync();
+        var rawState = await stateProvider.LoadRawStateAsync();
 
         return new OkObjectResult(rawState);
     }

@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace MakimaBot.Model;
 
-public class LocalStateClient(string pathToLocalStateFile) : IStateClient
+public class LocalStorageStateProvider(string pathToLocalStateFile) : IStateProvider
 {
     public async Task<string> LoadRawStateAsync()
     {

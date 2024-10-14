@@ -2,8 +2,8 @@
     "changelogs": [
         {
             "id": 15,
-            "version": "2.2.1",
-            "description": "- Development improvements"
+            "version": "2.3.0",
+            "description": "- Мы удобно разделили poduction и development! Теперь нам ничего не мешает выпускать обновления дальше!\n\n- Благодаря данному обновлению Макима может развиваться ещё быстрее!"
         },
         {
             "id": 14,

@@ -10,10 +10,10 @@ public class TestStateUpdater : StateUpdaterBase<TestBotState>
     public TestBotState? State { get; private set; } = null;
 
     public TestStateUpdater(
-        IStateClient stateClient,
+        IStateProvider stateProvider,
         ITextDiffPrinter textDiffPrinter,
         IEnumerable<Migration> migrations,
-        bool updateStateResult) : base(stateClient, textDiffPrinter, migrations)
+        bool updateStateResult) : base(stateProvider, textDiffPrinter, migrations)
     {
         _updateStateResult = updateStateResult;
     }

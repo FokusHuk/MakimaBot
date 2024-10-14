@@ -1,6 +1,6 @@
 namespace MakimaBot.Model;
 
-public interface IStateClient
+public interface IStateProvider
 {
     Task<string> LoadRawStateAsync();
     Task<BotState> LoadStateAsync();
