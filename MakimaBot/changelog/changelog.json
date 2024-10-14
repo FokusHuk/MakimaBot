@@ -1,6 +1,11 @@
 {
     "changelogs": [
         {
+            "id": 15,
+            "version": "2.2.1",
+            "description": "- Development improvements"
+        },
+        {
             "id": 14,
             "version": "2.2.1",
             "description": "- Observability"
