@@ -95,18 +95,18 @@ public class Startup(IConfiguration configuration)
             var bucketOptions = provider.GetRequiredService<IOptions<BucketOptions>>().Value;
 
             if(bucketOptions.UseLocalState)
-                return CreateLocalStorageStateProvider(services, bucketOptions);
+                return CreateLocalStorageStateProvider(bucketOptions);
             else
-                return CreateS3BucketStateProvider(services, bucketOptions);
+                return CreateS3BucketStateProvider(bucketOptions);
         });
     }
 
-    private IStateProvider CreateLocalStorageStateProvider(IServiceCollection services, BucketOptions bucketOptions)
+    private IStateProvider CreateLocalStorageStateProvider(BucketOptions bucketOptions)
     {
         return new LocalStorageStateProvider(bucketOptions.PathToLocalState);
     }
 
-    private IStateProvider CreateS3BucketStateProvider(IServiceCollection services, BucketOptions bucketOptions)
+    private IStateProvider CreateS3BucketStateProvider(BucketOptions bucketOptions)
     {
         var s3Config = new AmazonS3Config
         {

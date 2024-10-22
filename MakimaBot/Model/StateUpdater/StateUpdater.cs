@@ -10,11 +10,11 @@ public abstract class StateUpdaterBase<T> where T : class
     private readonly IEnumerable<Migration> _migrations;
 
     public StateUpdaterBase(
-        IStateProvider stateClient,
+        IStateProvider stateProvider,
         ITextDiffPrinter textDiffPrinter,
         IEnumerable<Migration> migrations)
     {
-        _stateProvider = stateClient;
+        _stateProvider = stateProvider;
         _textDiffPrinter = textDiffPrinter;
         _migrations = migrations;
     }
