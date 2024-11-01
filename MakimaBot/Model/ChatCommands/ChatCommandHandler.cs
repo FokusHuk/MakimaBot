@@ -4,15 +4,8 @@ using Telegram.Bot.Types.Enums;
 
 namespace MakimaBot.Model;
 
-public class ChatCommandHandler : IChatCommandHandler
+public class ChatCommandHandler(IEnumerable<ChatCommand> commands) : IChatCommandHandler
 {
-    private readonly IEnumerable<ChatCommand> _commands;
-
-    public ChatCommandHandler(IEnumerable<ChatCommand> commands)
-    {
-        _commands = commands;
-    }
-
     private const string CommandPattern = @"^@makima_daily_bot\s+([a-z]*)\s*(.*)$";
     private const string CommandError =
         $"""
@@ -23,14 +16,14 @@ public class ChatCommandHandler : IChatCommandHandler
     public async Task HandleAsync(
         Message message,
         ChatState chatState,
-        ITelegramBotClientWrapper _telegramBotClientWrapper,
+        ITelegramBotClientWrapper telegramBotClientWrapper,
         CancellationToken cancellationToken)
     {
         var match = Regex.Matches(message.Text, CommandPattern, RegexOptions.IgnoreCase);
 
         if (match.Count == 0 || string.IsNullOrEmpty(match.First().Groups[1].Value))
         {
-            await _telegramBotClientWrapper.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
                 CommandError,
                 replyToMessageId: message.MessageId,
@@ -40,10 +33,10 @@ public class ChatCommandHandler : IChatCommandHandler
         }
 
         var receivedCommandName = match.First().Groups[1].Value;
-        var currentCommand = _commands.SingleOrDefault(command => command.Name == receivedCommandName);
+        var currentCommand = commands.SingleOrDefault(command => command.Name == receivedCommandName);
         if (currentCommand is null)
         {
-            await _telegramBotClientWrapper.SendTextMessageAsync(
+            await telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
                 CommandError,
                 replyToMessageId: message.MessageId,
@@ -52,7 +45,22 @@ public class ChatCommandHandler : IChatCommandHandler
             return;
         }
 
+        var knownUser = chatState.Users.FirstOrDefault(user => user.UserId == message.From.Id);
+        if (knownUser is null || !knownUser.AllowedCommands.Contains(currentCommand.Name))
+        {
+            await telegramBotClientWrapper.SendTextMessageAsync(
+                chatState.ChatId,
+                $"""
+                 Доступ к команде запрещен!
+                 Запросите список доступных команд ( `@makima_daily_bot list` )
+                 """,
+                replyToMessageId: message.MessageId,
+                parseMode: ParseMode.Markdown,
+                cancellationToken: cancellationToken);
+            return;
+        }
+
         var rawParameters = match.First().Groups[2].Value;
-        await currentCommand.ExecuteAsync(message, chatState, rawParameters, _telegramBotClientWrapper, cancellationToken); 
+        await currentCommand.ExecuteAsync(message, chatState, rawParameters, telegramBotClientWrapper, cancellationToken); 
     }
 }
