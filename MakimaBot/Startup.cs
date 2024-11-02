@@ -174,5 +174,6 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<Migration, TestAddMigration>();
         services.AddSingleton<Migration, AddDailyBackupJobStateMigration>();
         services.AddSingleton<Migration, ConfigureNotificationsMigration>();
+        services.AddSingleton<Migration, AddUsersAndPermissionsToState>();
     }
 }

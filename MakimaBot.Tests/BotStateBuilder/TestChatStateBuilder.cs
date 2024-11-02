@@ -7,11 +7,12 @@ public class TestChatStateBuilder
     private long? _chatId = null;
     private string? _name = null;
     private EventsState? _eventsState = null;
+    private ICollection<UserState>? _users = null;
 
     public TestChatStateBuilder WithId(long chatId)
     {
         _chatId = chatId;
-        return this;
+        return this;    
     }
 
     public TestChatStateBuilder WithName(string name)
@@ -25,6 +26,12 @@ public class TestChatStateBuilder
         _eventsState = eventsState;
         return this;
     }
+    
+    public TestChatStateBuilder WithUsers(ICollection<UserState> users)
+    {
+        _users = users;
+        return this;
+    }
 
     public ChatState Build()
     {
@@ -32,7 +39,8 @@ public class TestChatStateBuilder
         {
             ChatId = _chatId ?? TestUniqueValueProvider.GetNextLong(),
             Name = _name ?? TestUniqueValueProvider.GetNextString("chat_name"),
-            EventsState = _eventsState ?? new TestEventsStateBuilder().Build()
+            EventsState = _eventsState ?? new TestEventsStateBuilder().Build(),
+            Users = _users ?? new TestUserStatesBuilder().Build()
         };
     }
 }

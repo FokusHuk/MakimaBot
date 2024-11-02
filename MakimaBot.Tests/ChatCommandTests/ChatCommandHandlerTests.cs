@@ -28,11 +28,13 @@ public class ChatCommandHandlerTests
         var chatCommandHandler = new ChatCommandHandler(chatCommands);
         var message = new Message().WithText(text);
 
+        
         await chatCommandHandler.HandleAsync(
             message,
             new TestChatStateBuilder().Build(),
             _telegramBotClientWrapper, CancellationToken.None);
 
+        
         Assert.IsTrue(chatCommands.All(command => command.ExecutionCount == 0));
         Assert.AreEqual(
             """
@@ -49,11 +51,13 @@ public class ChatCommandHandlerTests
         var chatCommandHandler = new ChatCommandHandler(chatCommands);
         var message = new Message().WithText("@makima_daily_bot unknownCommand");
 
+        
         await chatCommandHandler.HandleAsync(
             message,
             new TestChatStateBuilder().Build(),
              _telegramBotClientWrapper, CancellationToken.None);
 
+        
         Assert.IsTrue(chatCommands.All(command => command.ExecutionCount == 0));
         Assert.AreEqual(
             """
@@ -74,13 +78,22 @@ public class ChatCommandHandlerTests
     {
         var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
         var chatCommandHandler = new ChatCommandHandler(chatCommands);
-        var message = new Message().WithText(text);
+        var chatState = new TestChatStateBuilder()
+            .WithUsers(new TestUserStatesBuilder()
+                .WithUser(1, "", new string[] { "secondCommand" })
+                .Build())
+            .Build();
+        var message = new Message()
+            .WithText(text)
+            .WithSender(1);
 
+        
         await chatCommandHandler.HandleAsync(
             message,
-            new TestChatStateBuilder().Build(),
+            chatState,
             _telegramBotClientWrapper, CancellationToken.None);
 
+        
         Assert.AreEqual(null, _telegramBotClientWrapper.SentMessage);
         CollectionAssert.AreEqual(
             new[] { 0, 1 },
@@ -92,17 +105,58 @@ public class ChatCommandHandlerTests
     {
         var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
         var chatCommandHandler = new ChatCommandHandler(chatCommands);
-        var message = new Message().WithText("@makima_daily_bot firstCommand parameters параметры");
-
+        var chatState = new TestChatStateBuilder()
+            .WithUsers(new TestUserStatesBuilder()
+                .WithUser(1, "", new string[] { "firstCommand" })
+                .Build())
+            .Build();
+        var message = new Message()
+            .WithText("@makima_daily_bot firstCommand parameters параметры")
+            .WithSender(1);
+        
+        
         await chatCommandHandler.HandleAsync(
             message,
-            new TestChatStateBuilder().Build(),
+            chatState,
             _telegramBotClientWrapper, CancellationToken.None);
 
+        
         Assert.AreEqual(null, _telegramBotClientWrapper.SentMessage);
         CollectionAssert.AreEqual(
             new[] { 1, 0 },
             chatCommands.Select(command => command.ExecutionCount).ToArray());
+    }
+
+    [TestMethod]
+    [DataRow(2, "@makima_daily_bot firstCommand")]
+    [DataRow(1, "@makima_daily_bot secondCommand")]
+    public async Task HandleAsync_SecondCommandOrUnknownUser_AllowedFirstCommand_SendUserError(long userId, string expectedText)
+    {
+        var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
+        var chatCommandHandler = new ChatCommandHandler(chatCommands);
+        var chatState = new TestChatStateBuilder()
+            .WithUsers(new TestUserStatesBuilder()
+                .WithUser(1, "", new string[] { "firstCommand" })
+                .Build())
+            .Build();
+        var message = new Message()
+            .WithText(expectedText)
+            .WithSender(userId);
+        
+        
+        await chatCommandHandler.HandleAsync(
+            message,
+            chatState,
+            _telegramBotClientWrapper, CancellationToken.None);
+        
+        
+        Assert.IsTrue(chatCommands.All(command => command.ExecutionCount == 0));
+        Assert.AreEqual(
+             """
+             Доступ к команде запрещен!
+             Запросите список доступных команд ( `@makima_daily_bot list` )
+             """,
+            _telegramBotClientWrapper.SentMessage.Text);
     }
 }
 
