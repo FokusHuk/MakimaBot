@@ -128,7 +128,9 @@ public class ChatCommandHandlerTests
     }
 
     [TestMethod]
-    public async Task HandleAsync_SecondCommand_AllowedFirstCommand_SendUserError()
+    [DataRow(2, "@makima_daily_bot firstCommand")]
+    [DataRow(1, "@makima_daily_bot secondCommand")]
+    public async Task HandleAsync_SecondCommandOrUnknownUser_AllowedFirstCommand_SendUserError(long userId, string expectedText)
     {
         var chatCommands = new List<TestChatCommand> { new TestFirstCommand(), new TestSecondCommand() };
         var chatCommandHandler = new ChatCommandHandler(chatCommands);
@@ -138,8 +140,8 @@ public class ChatCommandHandlerTests
                 .Build())
             .Build();
         var message = new Message()
-            .WithText("@makima_daily_bot secondCommand")
-            .WithSender(1);
+            .WithText(expectedText)
+            .WithSender(userId);
         
         
         await chatCommandHandler.HandleAsync(
