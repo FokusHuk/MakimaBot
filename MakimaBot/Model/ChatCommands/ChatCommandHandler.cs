@@ -12,6 +12,11 @@ public class ChatCommandHandler(IEnumerable<ChatCommand> commands) : IChatComman
         @makima\_daily\_bot это команда!
         Запросите список доступных команд ( `@makima_daily_bot list` )
         """;
+    private const string PermissionError =
+        """
+        Доступ к команде запрещен!
+        Запросите список доступных команд ( `@makima_daily_bot list` )
+        """;
 
     public async Task HandleAsync(
         Message message,
@@ -50,10 +55,7 @@ public class ChatCommandHandler(IEnumerable<ChatCommand> commands) : IChatComman
         {
             await telegramBotClientWrapper.SendTextMessageAsync(
                 chatState.ChatId,
-                $"""
-                 Доступ к команде запрещен!
-                 Запросите список доступных команд ( `@makima_daily_bot list` )
-                 """,
+                PermissionError,
                 replyToMessageId: message.MessageId,
                 parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
