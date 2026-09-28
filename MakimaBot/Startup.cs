@@ -78,10 +78,16 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider =>
         {
             var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
+
+            var handler = new ConnectionRetryHandler(maxAttempts: 3)
+            {
+                InnerHandler = new SocketsHttpHandler { ConnectTimeout = TimeSpan.FromSeconds(5) }
+            };
+            var httpClient = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(30) };
+
             if (string.IsNullOrWhiteSpace(telegramOptions.BaseUrl))
-                return new TelegramBotClient(telegramOptions.Token);
-            
-            var httpClient = new HttpClient();
+                return new TelegramBotClient(telegramOptions.Token, httpClient);
+
             if (!string.IsNullOrWhiteSpace(telegramOptions.ProxySecret))
                 httpClient.DefaultRequestHeaders.Add(TelegramOptions.ProxySecretHeader, telegramOptions.ProxySecret);
 
