@@ -78,7 +78,16 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider =>
         {
             var telegramOptions = provider.GetRequiredService<IOptions<TelegramOptions>>().Value;
-            return new TelegramBotClient(telegramOptions.Token);
+            if (string.IsNullOrWhiteSpace(telegramOptions.BaseUrl))
+                return new TelegramBotClient(telegramOptions.Token);
+            
+            var httpClient = new HttpClient();
+            if (!string.IsNullOrWhiteSpace(telegramOptions.ProxySecret))
+                httpClient.DefaultRequestHeaders.Add(TelegramOptions.ProxySecretHeader, telegramOptions.ProxySecret);
+
+            return new TelegramBotClient(
+                new TelegramBotClientOptions(telegramOptions.Token, telegramOptions.BaseUrl),
+                httpClient);
         });
         services.AddSingleton<ITelegramBotClientWrapper, TelegramBotClientWrapper>();
 
