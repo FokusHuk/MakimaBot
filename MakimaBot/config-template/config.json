@@ -1,7 +1,9 @@
 ﻿{
   "telegramConfig":
   {
-    "token": "botToken"
+    "token": "botToken",
+    "baseUrl": "proxy",
+    "proxySecret": "secret"
   },
   "bucketConfig":
   {
